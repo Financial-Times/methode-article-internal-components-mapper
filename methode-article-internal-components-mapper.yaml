@@ -99,9 +99,9 @@ consumer:
   healthCheck:
     name: "Can connect consumer to kafka-proxy"
     severity: 2
-    businessImpact: "Newly published Methode articles will not be available from the Content API"
+    businessImpact: "Internal components of newly published Methode articles will not be available from the InternalContent API"
     technicalSummary: "Tests that kafka-proxy is reachable and message can be consumed"
-    panicGuideUrl: "https://dewey.ft.com/up-mam.html"
+    panicGuideUrl: "https://dewey.ft.com/up-maicm.html"
   systemCode: methode-web-pub
 
 producer:
@@ -116,8 +116,8 @@ producer:
   healthCheck:
     name: "Can connect producer to kafka-proxy"
     severity: 2
-    businessImpact: "Newly published Methode articles will not be available from the Content API"
+    businessImpact: "Internal components of newly published Methode articles will not be available from the InternalContent API"
     technicalSummary: "Tests that kafka-proxy is reachable and the CmsPublicationEvents topic exists"
-    panicGuideUrl: "https://dewey.ft.com/up-mam.html"
+    panicGuideUrl: "https://dewey.ft.com/up-maicm.html"
 
 contentUriPrefix: http://methode-article-internal-components-mapper.svc.ft.com/internalcomponents

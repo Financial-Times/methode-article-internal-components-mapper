@@ -148,8 +148,8 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 "/__health",
                 "methode-article-mapper",
                 1,
-                "Internal components will not be published",
-                "https://dewey.ft.com/up-mam.html")
+                "Internal components of newly published Methode articles will not be available from the InternalContent API",
+                "https://dewey.ft.com/up-maicm.html")
         );
         return healthchecks;
     }
