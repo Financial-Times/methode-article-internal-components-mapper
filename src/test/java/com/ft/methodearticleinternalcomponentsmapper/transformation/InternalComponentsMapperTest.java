@@ -92,7 +92,7 @@ public class InternalComponentsMapperTest {
 
     @Test
     public void thatValidArticleWithTopperButEmptyStandfirstAndHeadlineIsMappedCorrectly() throws Exception {
-        String bgColor = "fooBackground";
+        String backgroundColor = "fooBackground";
         String theme = "barColor";
         String squareImageUUID = java.util.UUID.randomUUID().toString();
         String wideImageUUID = java.util.UUID.randomUUID().toString();
@@ -100,7 +100,7 @@ public class InternalComponentsMapperTest {
         eomFile = new EomFile.Builder()
                 .withUuid(UUID)
                 .withType("EOM::CompoundStory")
-                .withValue(buildEomFileValue(bgColor, theme, "", "", squareImageUUID, standardImageUUID, wideImageUUID))
+                .withValue(buildEomFileValue(backgroundColor, theme, "", "", squareImageUUID, standardImageUUID, wideImageUUID))
                 .build();
 
         when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
@@ -112,7 +112,7 @@ public class InternalComponentsMapperTest {
         assertThat(actual.getLastModified(), equalTo(LAST_MODIFIED));
         assertThat(actual.getPublishReference(), equalTo(TX_ID));
 
-        assertThat(actual.getTopper().getBgColor(), equalTo(bgColor));
+        assertThat(actual.getTopper().getBackgroundColor(), equalTo(backgroundColor));
         assertThat(actual.getTopper().getTheme(), equalTo(theme));
         assertThat(actual.getTopper().getStandfirst(), equalTo(""));
         assertThat(actual.getTopper().getHeadline(), equalTo(""));
