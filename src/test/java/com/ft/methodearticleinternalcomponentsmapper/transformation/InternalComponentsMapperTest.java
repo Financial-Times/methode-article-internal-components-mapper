@@ -59,7 +59,7 @@ public class InternalComponentsMapperTest {
 
     @Test
     public void thatValidArticleWithInternalComponentsIsMappedCorrectly() throws Exception {
-        String bgColor = "fooBackground";
+        String backgroundColor = "fooBackground";
         String theme = "barColor";
         String headline = "foobar headline";
         String standfirst = "foobaz standfirst";
@@ -69,7 +69,7 @@ public class InternalComponentsMapperTest {
         eomFile = new EomFile.Builder()
                 .withUuid(UUID)
                 .withType("EOM::CompoundStory")
-                .withValue(buildEomFileValue(bgColor, theme, headline, standfirst, squareImageUUID, standardImageUUID, wideImageUUID))
+                .withValue(buildEomFileValue(backgroundColor, theme, headline, standfirst, squareImageUUID, standardImageUUID, wideImageUUID))
                 .build();
 
         when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
@@ -81,7 +81,7 @@ public class InternalComponentsMapperTest {
         assertThat(actual.getLastModified(), equalTo(LAST_MODIFIED));
         assertThat(actual.getPublishReference(), equalTo(TX_ID));
 
-        assertThat(actual.getTopper().getBgColor(), equalTo(bgColor));
+        assertThat(actual.getTopper().getBackgroundColor(), equalTo(backgroundColor));
         assertThat(actual.getTopper().getTheme(), equalTo(theme));
         assertThat(actual.getTopper().getStandfirst(), equalTo(standfirst));
         assertThat(actual.getTopper().getHeadline(), equalTo(headline));
@@ -129,13 +129,13 @@ public class InternalComponentsMapperTest {
     }
 
     private byte[] buildEomFileValue(
-            String bgColor, String theme, String headline, String standfirst,
+            String backgroundColor, String theme, String headline, String standfirst,
             String squareImg, String standardImg, String wideImg) {
 
         Template mustache = Mustache.compiler().escapeHTML(false).compile(ARTICLE_TEMPLATE);
 
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("bgColor", bgColor);
+        attributes.put("backgroundColor", backgroundColor);
         attributes.put("theme", theme);
         attributes.put("headline", headline);
         attributes.put("standfirst", standfirst);

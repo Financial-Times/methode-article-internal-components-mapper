@@ -77,11 +77,11 @@ public class InternalComponentsMapper {
             throw new MethodeArticleHasNoInternalComponentsException(uuid);
         }
         String topperTheme = Strings.nullToEmpty(xpath.evaluate(topperBasePath + "/@theme", eomFileDoc)).trim();
-        String topperBGColor = Strings.nullToEmpty(xpath.evaluate(topperBasePath + "/@bgcolor", eomFileDoc)).trim();
+        String topperBackgroundColor = Strings.nullToEmpty(xpath.evaluate(topperBasePath + "/@bgcolor", eomFileDoc)).trim();
         String topperHeadline = Strings.nullToEmpty(xpath.evaluate(topperBasePath + "/topper-headline", eomFileDoc)).trim();
         String topperStandfirst = Strings.nullToEmpty(xpath.evaluate(topperBasePath + "/topper-standfirst", eomFileDoc)).trim();
 
-        return new Topper(topperTheme, topperBGColor, buildImages(xpath, eomFileDoc, topperBasePath), topperHeadline, topperStandfirst);
+        return new Topper(topperTheme, topperBackgroundColor, buildImages(xpath, eomFileDoc, topperBasePath), topperHeadline, topperStandfirst);
     }
 
     private List<Image> buildImages(XPath xpath, Document doc, String topperBasePath) throws XPathExpressionException {
