@@ -59,7 +59,7 @@ public class InternalComponentsMapperTest {
 
     @Test
     public void thatValidArticleWithInternalComponentsIsMappedCorrectly() throws Exception {
-        String backgroundColor = "fooBackground";
+        String backgroundColour = "fooBackground";
         String theme = "barColor";
         String headline = "foobar headline";
         String standfirst = "foobaz standfirst";
@@ -69,7 +69,7 @@ public class InternalComponentsMapperTest {
         eomFile = new EomFile.Builder()
                 .withUuid(UUID)
                 .withType("EOM::CompoundStory")
-                .withValue(buildEomFileValue(backgroundColor, theme, headline, standfirst, squareImageUUID, standardImageUUID, wideImageUUID))
+                .withValue(buildEomFileValue(backgroundColour, theme, headline, standfirst, squareImageUUID, standardImageUUID, wideImageUUID))
                 .build();
 
         when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
@@ -81,7 +81,7 @@ public class InternalComponentsMapperTest {
         assertThat(actual.getLastModified(), equalTo(LAST_MODIFIED));
         assertThat(actual.getPublishReference(), equalTo(TX_ID));
 
-        assertThat(actual.getTopper().getBackgroundColor(), equalTo(backgroundColor));
+        assertThat(actual.getTopper().getBackgroundColour(), equalTo(backgroundColour));
         assertThat(actual.getTopper().getTheme(), equalTo(theme));
         assertThat(actual.getTopper().getStandfirst(), equalTo(standfirst));
         assertThat(actual.getTopper().getHeadline(), equalTo(headline));
@@ -92,7 +92,7 @@ public class InternalComponentsMapperTest {
 
     @Test
     public void thatValidArticleWithTopperButEmptyStandfirstAndHeadlineIsMappedCorrectly() throws Exception {
-        String backgroundColor = "fooBackground";
+        String backgroundColour = "fooBackground";
         String theme = "barColor";
         String squareImageUUID = java.util.UUID.randomUUID().toString();
         String wideImageUUID = java.util.UUID.randomUUID().toString();
@@ -100,7 +100,7 @@ public class InternalComponentsMapperTest {
         eomFile = new EomFile.Builder()
                 .withUuid(UUID)
                 .withType("EOM::CompoundStory")
-                .withValue(buildEomFileValue(backgroundColor, theme, "", "", squareImageUUID, standardImageUUID, wideImageUUID))
+                .withValue(buildEomFileValue(backgroundColour, theme, "", "", squareImageUUID, standardImageUUID, wideImageUUID))
                 .build();
 
         when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
@@ -112,7 +112,7 @@ public class InternalComponentsMapperTest {
         assertThat(actual.getLastModified(), equalTo(LAST_MODIFIED));
         assertThat(actual.getPublishReference(), equalTo(TX_ID));
 
-        assertThat(actual.getTopper().getBackgroundColor(), equalTo(backgroundColor));
+        assertThat(actual.getTopper().getBackgroundColour(), equalTo(backgroundColour));
         assertThat(actual.getTopper().getTheme(), equalTo(theme));
         assertThat(actual.getTopper().getStandfirst(), equalTo(""));
         assertThat(actual.getTopper().getHeadline(), equalTo(""));
@@ -180,13 +180,13 @@ public class InternalComponentsMapperTest {
     }
 
     private byte[] buildEomFileValue(
-            String backgroundColor, String theme, String headline, String standfirst,
+            String backgroundColour, String theme, String headline, String standfirst,
             String squareImg, String standardImg, String wideImg) {
 
         Template mustache = Mustache.compiler().escapeHTML(false).compile(ARTICLE_WITH_TOPPER);
 
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("backgroundColor", backgroundColor);
+        attributes.put("backgroundColour", backgroundColour);
         attributes.put("theme", theme);
         attributes.put("headline", headline);
         attributes.put("standfirst", standfirst);

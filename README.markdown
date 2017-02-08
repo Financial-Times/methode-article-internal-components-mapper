@@ -37,7 +37,7 @@ You can find an example of a transformed article below.
 {
   "topper": {
     "theme": "full-bleed-image-left",
-    "backgroundColor": "slate",
+    "backgroundColour": "slate",
     "headline": "This is the topper headline Lorem ipsum do",
     "standfirst": "This is the topper standfirst",
     "images": [
