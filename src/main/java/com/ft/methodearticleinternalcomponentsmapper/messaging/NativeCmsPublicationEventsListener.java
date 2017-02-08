@@ -73,32 +73,32 @@ public class NativeCmsPublicationEventsListener implements MessageListener {
                 return false;
             }
             return isValidType(eomFile.getType())
-                && isValidSource(eomFile.getAttributes());
+                    && isValidSource(eomFile.getAttributes());
         };
     }
 
     private boolean isValidType(String type) {
         return "EOM::CompoundStory".equals(type);
     }
-    
+
     private boolean isValidSource(String attributes) {
-      String sourceCode = null;
-      
-      try {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        
-        DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
-        Document attributesDocument = db.parse(new InputSource(new StringReader(attributes)));
-        
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        
-        sourceCode = xpath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
-      } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
-        LOG.warn("Unable to obtain EOMFile source", e);
-        // and fall through, to return false
-      }
-      
-      return "FT".equals(sourceCode);
+        String sourceCode = null;
+
+        try {
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
+            Document attributesDocument = db.parse(new InputSource(new StringReader(attributes)));
+
+            XPath xpath = XPathFactory.newInstance().newXPath();
+
+            sourceCode = xpath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
+        } catch (IOException | ParserConfigurationException | SAXException | XPathExpressionException e) {
+            LOG.warn("Unable to obtain EOMFile source", e);
+            // and fall through, to return false
+        }
+
+        return "FT".equals(sourceCode);
     }
 }

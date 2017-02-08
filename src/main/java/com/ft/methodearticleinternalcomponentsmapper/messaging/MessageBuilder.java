@@ -46,7 +46,7 @@ public class MessageBuilder {
         return buildMessage(internalComponents.getUuid(), internalComponents.getPublishReference(), msgBody);
     }
 
-    Message buildMessageForDeletedMethodeContent(String uuid, String publishReference, Date lastModified) {
+    Message buildDeletedInternalComponentsMessage(String uuid, String publishReference, Date lastModified) {
         MessageBody msgBody = new MessageBody(
                 null,
                 contentUriBuilder.build(uuid).toString(),
@@ -87,9 +87,9 @@ public class MessageBuilder {
                 @JsonProperty("payload")
                         InternalComponents payload,
                 @JsonProperty("contentUri")
-                String contentUri,
+                        String contentUri,
                 @JsonProperty("lastModified")
-                String lastModified) {
+                        String lastModified) {
             this.contentUri = contentUri;
             this.payload = payload;
             this.lastModified = lastModified;

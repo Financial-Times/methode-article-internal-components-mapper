@@ -13,7 +13,11 @@ public class ConnectionConfiguration {
         this.timeoutMultiplier = timeoutMultiplier;
     }
 
-    public int getNumberOfConnectionAttempts() { return numberOfConnectionAttempts; }
+    public int getNumberOfConnectionAttempts() {
+        return numberOfConnectionAttempts;
+    }
 
-    public int getTimeoutMultiplier() { return timeoutMultiplier; }
+    public int getTimeoutMultiplier() {
+        return timeoutMultiplier;
+    }
 }

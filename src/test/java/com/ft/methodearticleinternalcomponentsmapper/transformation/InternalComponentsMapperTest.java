@@ -1,6 +1,5 @@
 package com.ft.methodearticleinternalcomponentsmapper.transformation;
 
-import com.ft.common.FileUtils;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleHasNoInternalComponentsException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
@@ -40,8 +39,9 @@ public class InternalComponentsMapperTest {
     private static final String TX_ID = "tid_test";
     private static final Date LAST_MODIFIED = new Date();
 
-    private static final String ARTICLE_TEMPLATE = readFile("article/article_value.xml.mustache");
-    private static final String ARTICLE_WITHOUT_TOPPER = readFile("article/article_value_with_no_topper.xml");
+    private static final String ARTICLE_WITH_TOPPER = readFile("article/article_with_topper.xml.mustache");
+    private static final String ARTICLE_WITH_NO_TOPPER = readFile("article/article_with_no_topper.xml");
+    private static final String ARTICLE_WITH_EMPTY_TOPPER = readFile("article/article_with_empty_topper.xml");
 
     @Mock
     EomFile eomFile;
@@ -90,12 +90,43 @@ public class InternalComponentsMapperTest {
         assertThat(actual.getTopper().getImages().get(2).getId(), equalTo(wideImageUUID));
     }
 
-    @Test (expected = MethodeArticleHasNoInternalComponentsException.class)
-    public void ethatValidArticleWithoutInternalComponentsThrowsException() throws Exception {
+    @Test
+    public void thatValidArticleWithTopperButEmptyStandfirstAndHeadlineIsMappedCorrectly() throws Exception {
+        String bgColor = "fooBackground";
+        String theme = "barColor";
+        String squareImageUUID = java.util.UUID.randomUUID().toString();
+        String wideImageUUID = java.util.UUID.randomUUID().toString();
+        String standardImageUUID = java.util.UUID.randomUUID().toString();
         eomFile = new EomFile.Builder()
                 .withUuid(UUID)
                 .withType("EOM::CompoundStory")
-                .withValue(ARTICLE_WITHOUT_TOPPER.getBytes())
+                .withValue(buildEomFileValue(bgColor, theme, "", "", squareImageUUID, standardImageUUID, wideImageUUID))
+                .build();
+
+        when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
+                .thenReturn(PublishingStatus.VALID);
+
+        InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+
+        assertThat(actual.getUuid(), equalTo(UUID));
+        assertThat(actual.getLastModified(), equalTo(LAST_MODIFIED));
+        assertThat(actual.getPublishReference(), equalTo(TX_ID));
+
+        assertThat(actual.getTopper().getBgColor(), equalTo(bgColor));
+        assertThat(actual.getTopper().getTheme(), equalTo(theme));
+        assertThat(actual.getTopper().getStandfirst(), equalTo(""));
+        assertThat(actual.getTopper().getHeadline(), equalTo(""));
+        assertThat(actual.getTopper().getImages().get(0).getId(), equalTo(squareImageUUID));
+        assertThat(actual.getTopper().getImages().get(1).getId(), equalTo(standardImageUUID));
+        assertThat(actual.getTopper().getImages().get(2).getId(), equalTo(wideImageUUID));
+    }
+
+    @Test(expected = MethodeArticleHasNoInternalComponentsException.class)
+    public void thatValidArticleWithoutInternalComponentsThrowsException() throws Exception {
+        eomFile = new EomFile.Builder()
+                .withUuid(UUID)
+                .withType("EOM::CompoundStory")
+                .withValue(ARTICLE_WITH_NO_TOPPER.getBytes())
                 .build();
 
         when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
@@ -104,7 +135,21 @@ public class InternalComponentsMapperTest {
         internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
     }
 
-    @Test (expected = MethodeArticleMarkedDeletedException.class)
+    @Test(expected = MethodeArticleHasNoInternalComponentsException.class)
+    public void thatValidArticleWithEmptyInternalComponentsThrowsException() throws Exception {
+        eomFile = new EomFile.Builder()
+                .withUuid(UUID)
+                .withType("EOM::CompoundStory")
+                .withValue(ARTICLE_WITH_EMPTY_TOPPER.getBytes())
+                .build();
+
+        when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
+                .thenReturn(PublishingStatus.VALID);
+
+        internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+    }
+
+    @Test(expected = MethodeArticleMarkedDeletedException.class)
     public void thatArticleMarkedAsDeletedThrowsException() throws Exception {
         when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
                 .thenReturn(PublishingStatus.DELETED);
@@ -112,7 +157,7 @@ public class InternalComponentsMapperTest {
         internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
     }
 
-    @Test (expected = MethodeArticleNotEligibleForPublishException.class)
+    @Test(expected = MethodeArticleNotEligibleForPublishException.class)
     public void thatArticleIneligibleForPublishThrowsException() throws Exception {
         when(methodeArticleValidator.getPublishingStatus(eq(eomFile), eq(TX_ID), anyBoolean()))
                 .thenReturn(PublishingStatus.INELIGIBLE);
@@ -122,7 +167,13 @@ public class InternalComponentsMapperTest {
 
     private static String readFile(final String path) {
         try {
-            return new String(Files.readAllBytes(Paths.get(FileUtils.class.getClassLoader().getResource(path).toURI())), "UTF-8");
+            return new String(Files.readAllBytes(Paths.get(
+                    InternalComponentsMapperTest.class
+                            .getClassLoader()
+                            .getResource(path)
+                            .toURI())),
+                    "UTF-8"
+            );
         } catch (IOException | URISyntaxException ex) {
             throw new RuntimeException(ex);
         }
@@ -132,7 +183,7 @@ public class InternalComponentsMapperTest {
             String backgroundColor, String theme, String headline, String standfirst,
             String squareImg, String standardImg, String wideImg) {
 
-        Template mustache = Mustache.compiler().escapeHTML(false).compile(ARTICLE_TEMPLATE);
+        Template mustache = Mustache.compiler().escapeHTML(false).compile(ARTICLE_WITH_TOPPER);
 
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("backgroundColor", backgroundColor);

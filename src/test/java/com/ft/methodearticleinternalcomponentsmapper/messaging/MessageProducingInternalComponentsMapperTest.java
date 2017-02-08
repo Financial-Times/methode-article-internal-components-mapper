@@ -2,6 +2,7 @@ package com.ft.methodearticleinternalcomponentsmapper.messaging;
 
 import com.ft.messagequeueproducer.MessageProducer;
 import com.ft.messaging.standards.message.v1.Message;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleHasNoInternalComponentsException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
 import com.ft.methodearticleinternalcomponentsmapper.model.InternalComponents;
@@ -79,7 +80,22 @@ public class MessageProducingInternalComponentsMapperTest {
         Message deletedContentMsg = mock(Message.class);
 
         when(mapper.map(any(), anyString(), any(), eq(false))).thenThrow(MethodeArticleMarkedDeletedException.class);
-        when(messageBuilder.buildMessageForDeletedMethodeContent(uuid, tid, date)).thenReturn(deletedContentMsg);
+        when(messageBuilder.buildDeletedInternalComponentsMessage(uuid, tid, date)).thenReturn(deletedContentMsg);
+
+        msgProducingArticleMapper.mapInternalComponents(new EomFile.Builder().withUuid(uuid).build(), tid, date);
+
+        verify(producer).send(Collections.singletonList(deletedContentMsg));
+    }
+
+    @Test
+    public void thatMessageWithNoInternalComponentsIsSentToQueue() {
+        String tid = "tid";
+        Date date = new Date();
+        String uuid = UUID.randomUUID().toString();
+        Message deletedContentMsg = mock(Message.class);
+
+        when(mapper.map(any(), anyString(), any(), eq(false))).thenThrow(MethodeArticleHasNoInternalComponentsException.class);
+        when(messageBuilder.buildDeletedInternalComponentsMessage(uuid, tid, date)).thenReturn(deletedContentMsg);
 
         msgProducingArticleMapper.mapInternalComponents(new EomFile.Builder().withUuid(uuid).build(), tid, date);
 

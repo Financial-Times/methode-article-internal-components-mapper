@@ -24,7 +24,7 @@ public class RemoteServiceHealthCheck extends AdvancedHealthCheck {
     private final Client client;
     private final String hostHeader;
     private final URI remoteServiceUri;
-    
+
     public RemoteServiceHealthCheck(
             String serviceName,
             Client client,
@@ -43,12 +43,12 @@ public class RemoteServiceHealthCheck extends AdvancedHealthCheck {
         this.severity = severity;
         this.businessImpact = businessImpact;
         this.panicGuideUrl = panicGuideUrl;
-        
+
         this.remoteServiceUri = UriBuilder.fromPath(path)
-            .scheme("http")
-            .host(hostName)
-            .port(port)
-            .build();
+                .scheme("http")
+                .host(hostName)
+                .port(port)
+                .build();
     }
 
     public AdvancedResult checkAdvanced() throws Exception {

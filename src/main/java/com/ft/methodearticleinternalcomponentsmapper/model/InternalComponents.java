@@ -42,6 +42,7 @@ public class InternalComponents {
     public Date getLastModified() {
         return lastModified;
     }
+
     public String getPublishReference() {
         return publishReference;
     }
@@ -57,7 +58,8 @@ public class InternalComponents {
 
         private Topper topper;
 
-        public Builder() {}
+        public Builder() {
+        }
 
         public InternalComponents.Builder withUuid(UUID uuid) {
             this.uuid = uuid.toString();

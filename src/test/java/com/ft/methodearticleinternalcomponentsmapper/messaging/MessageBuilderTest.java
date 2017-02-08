@@ -3,7 +3,6 @@ package com.ft.methodearticleinternalcomponentsmapper.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ft.content.model.Content;
 import com.ft.messaging.standards.message.v1.Message;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleInternalComponentsMapperException;
 import com.ft.methodearticleinternalcomponentsmapper.model.InternalComponents;
@@ -106,7 +105,7 @@ public class MessageBuilderTest {
         String lastModified = "2016-11-02T07:59:24.715Z";
         Date lastModifiedDate = Date.from(Instant.parse(lastModified));
 
-        Message msg = messageBuilder.buildMessageForDeletedMethodeContent(UUID.toString(), "tid", lastModifiedDate);
+        Message msg = messageBuilder.buildDeletedInternalComponentsMessage(UUID.toString(), "tid", lastModifiedDate);
 
         Map<String, Object> msgContent = objectMapper.reader(Map.class).readValue(msg.getMessageBody());
         assertThat(msgContent.get("contentUri"), equalTo(contentUri.toString()));

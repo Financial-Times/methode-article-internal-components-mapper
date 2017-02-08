@@ -28,7 +28,6 @@ import java.util.UUID;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -72,7 +71,7 @@ public class InternalComponentsMapper {
         final XPath xpath = XPathFactory.newInstance().newXPath();
 
         String topperBasePath = "/doc/lead/lead-components/topper";
-        if (Strings.nullToEmpty(xpath.evaluate(topperBasePath, eomFileDoc)).trim().isEmpty()) {
+        if (topperIsMissing(eomFileDoc, xpath, topperBasePath)) {
             LOGGER.info("Article {} does not have a topper element", uuid);
             throw new MethodeArticleHasNoInternalComponentsException(uuid);
         }
@@ -82,6 +81,12 @@ public class InternalComponentsMapper {
         String topperStandfirst = Strings.nullToEmpty(xpath.evaluate(topperBasePath + "/topper-standfirst", eomFileDoc)).trim();
 
         return new Topper(topperTheme, topperBackgroundColor, buildImages(xpath, eomFileDoc, topperBasePath), topperHeadline, topperStandfirst);
+    }
+
+
+    private boolean topperIsMissing(Document eomFileDoc, XPath xpath, String topperBasePath) throws XPathExpressionException {
+        // if the theme attribute is present, the topper is valid
+        return Strings.nullToEmpty(xpath.evaluate(topperBasePath + "/@theme", eomFileDoc)).trim().isEmpty();
     }
 
     private List<Image> buildImages(XPath xpath, Document doc, String topperBasePath) throws XPathExpressionException {

@@ -128,7 +128,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
     }
 
     private void registerHealthChecks(Environment environment,
-            List<AdvancedHealthCheck> advancedHealthChecks) {
+                                      List<AdvancedHealthCheck> advancedHealthChecks) {
 
         HealthCheckRegistry healthChecks = environment.healthChecks();
         for (AdvancedHealthCheck hc : advancedHealthChecks) {
@@ -137,7 +137,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
     }
 
     private List<AdvancedHealthCheck> buildClientHealthChecks(Client methodeArticleMapperClient,
-            EndpointConfiguration methodeArticleMapperEndpointConfiguration) {
+                                                              EndpointConfiguration methodeArticleMapperEndpointConfiguration) {
 
         List<AdvancedHealthCheck> healthchecks = new ArrayList<>();
         healthchecks.add(new RemoteServiceHealthCheck(
@@ -148,8 +148,8 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 "/__health",
                 "methode-article-mapper",
                 1,
-                "Articles will not be annotated with company tearsheet information.",
-                "https://dewey.ft.com/up-mam.html")
+                "Internal components of newly published Methode articles will not be available from the InternalContent API",
+                "https://dewey.ft.com/up-maicm.html")
         );
         return healthchecks;
     }

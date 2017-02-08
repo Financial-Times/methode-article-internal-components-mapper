@@ -34,16 +34,16 @@ public class MapResource {
     public MapResource(InternalComponentsMapper internalComponentsMapper) {
         this.internalComponentsMapper = internalComponentsMapper;
     }
-    
+
     @POST
     @Timed
     @Path("/content-transform/{id}")
     @QueryParam("preview")
     @Produces(MediaType.APPLICATION_JSON + CHARSET_UTF_8)
     public final InternalComponents contentTransform(@PathParam("id") String id,
-                                          @QueryParam("preview") boolean preview,
-                                          EomFile eomFile,
-                                          @Context HttpHeaders httpHeaders) {
+                                                     @QueryParam("preview") boolean preview,
+                                                     EomFile eomFile,
+                                                     @Context HttpHeaders httpHeaders) {
         return map(preview, eomFile, httpHeaders);
     }
 
@@ -64,6 +64,8 @@ public class MapResource {
             throw new WebApplicationException(HttpStatus.SC_UNPROCESSABLE_ENTITY);
         }
     }
+
+
 }
 
 

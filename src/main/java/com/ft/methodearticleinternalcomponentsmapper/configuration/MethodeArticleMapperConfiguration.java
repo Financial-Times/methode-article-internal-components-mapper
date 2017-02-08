@@ -11,14 +11,18 @@ public class MethodeArticleMapperConfiguration {
     private final ConnectionConfiguration connectionConfiguration;
 
     public MethodeArticleMapperConfiguration(@JsonProperty("endpointConfiguration") EndpointConfiguration endpointConfiguration,
-                                       @JsonProperty("connectionConfig") ConnectionConfiguration connectionConfiguration) {
+                                             @JsonProperty("connectionConfig") ConnectionConfiguration connectionConfiguration) {
         this.endpointConfiguration = endpointConfiguration;
         this.connectionConfiguration = connectionConfiguration;
     }
 
-    public EndpointConfiguration getEndpointConfiguration() { return endpointConfiguration; }
+    public EndpointConfiguration getEndpointConfiguration() {
+        return endpointConfiguration;
+    }
 
-    public ConnectionConfiguration getConnectionConfiguration() { return connectionConfiguration; }
+    public ConnectionConfiguration getConnectionConfiguration() {
+        return connectionConfiguration;
+    }
 
     protected Objects.ToStringHelper toStringHelper() {
         return Objects

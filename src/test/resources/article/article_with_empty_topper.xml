@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE doc SYSTEM "/SysConfig/Rules/ftpsi.dtd">
+<doc>
+    <lead>
+        <lead-components>
+            <topper/>
+        </lead-components>
+    </lead>
+</doc>
