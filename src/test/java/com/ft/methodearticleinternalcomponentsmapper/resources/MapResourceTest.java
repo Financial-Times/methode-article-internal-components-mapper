@@ -96,7 +96,7 @@ public class MapResourceTest {
     }
 
     @Test
-    public void shouldThrow422ExceptionWhenStoryHasNoInternalComponents() {
+    public void shouldThrow404ExceptionWhenStoryHasNoInternalComponents() {
 
         when(internalComponentsMapper.map(eq(eomFile), eq(TRANSACTION_ID), any(), anyBoolean())).
                 thenThrow(new MethodeArticleHasNoInternalComponentsException(uuid));
@@ -104,7 +104,7 @@ public class MapResourceTest {
             mapResource.map(false, eomFile, httpHeaders);
             fail("No exception was thrown, but expected one.");
         } catch (WebApplicationException wace) {
-            assertThat(wace.getResponse().getStatus(), equalTo(HttpStatus.SC_UNPROCESSABLE_ENTITY));
+            assertThat(wace.getResponse().getStatus(), equalTo(HttpStatus.SC_NOT_FOUND));
         }
     }
 

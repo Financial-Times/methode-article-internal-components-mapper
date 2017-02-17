@@ -58,9 +58,9 @@ public class MapResource {
         String transactionId = TransactionIdUtils.getTransactionIdOrDie(httpHeaders);
         try {
             return internalComponentsMapper.map(eomFile, transactionId, new Date(), preview);
-        } catch (MethodeArticleMarkedDeletedException e) {
+        } catch (MethodeArticleMarkedDeletedException | MethodeArticleHasNoInternalComponentsException e) {
             throw new WebApplicationException(HttpStatus.SC_NOT_FOUND);
-        } catch (MethodeArticleNotEligibleForPublishException | MethodeArticleHasNoInternalComponentsException e) {
+        } catch (MethodeArticleNotEligibleForPublishException e) {
             throw new WebApplicationException(HttpStatus.SC_UNPROCESSABLE_ENTITY);
         }
     }
