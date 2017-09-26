@@ -49,6 +49,7 @@ public class RemoteServiceHealthCheckTest {
         when(mockResource.header("Host", HOST_HEADER)).thenReturn(builder);
         when(builder.get(ClientResponse.class)).thenReturn(mockClientResponse);
 
+
         healthCheck = new RemoteServiceHealthCheck(
                 "upp-service",
                 mockClient,

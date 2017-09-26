@@ -148,8 +148,8 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 methodeArticleMapperClient,
                 methodeArticleMapperEndpointConfiguration.getHost(),
                 methodeArticleMapperEndpointConfiguration.getPort(),
-                "methode-article-mapper",
                 "/__health",
+                "methode-article-mapper",
                 1,
                 "Internal components of newly published Methode articles will not be available from the InternalContent API",
                 "https://dewey.ft.com/up-maicm.html")
