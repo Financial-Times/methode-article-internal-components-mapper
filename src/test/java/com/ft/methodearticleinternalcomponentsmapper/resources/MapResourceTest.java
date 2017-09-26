@@ -1,12 +1,10 @@
 package com.ft.methodearticleinternalcomponentsmapper.resources;
 
 import com.ft.api.util.transactionid.TransactionIdUtils;
-import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleHasNoInternalComponentsException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
 import com.ft.methodearticleinternalcomponentsmapper.transformation.InternalComponentsMapper;
-
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,19 +78,6 @@ public class MapResourceTest {
             fail("No exception was thrown, but expected one.");
         } catch (WebApplicationException wace) {
             assertThat(wace.getResponse().getStatus(), equalTo(HttpStatus.SC_UNPROCESSABLE_ENTITY));
-        }
-    }
-
-    @Test
-    public void shouldThrow404ExceptionWhenStoryHasNoInternalComponents() {
-
-        when(internalComponentsMapper.map(eq(eomFile), eq(TRANSACTION_ID), any(), anyBoolean())).
-                thenThrow(new MethodeArticleHasNoInternalComponentsException(uuid));
-        try {
-            mapResource.map(false, eomFile, httpHeaders);
-            fail("No exception was thrown, but expected one.");
-        } catch (WebApplicationException wace) {
-            assertThat(wace.getResponse().getStatus(), equalTo(HttpStatus.SC_NOT_FOUND));
         }
     }
 }

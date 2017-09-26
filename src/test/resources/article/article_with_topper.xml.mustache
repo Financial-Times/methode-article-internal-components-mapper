@@ -3,19 +3,28 @@
 <doc>
     <lead>
         <lead-components>
-            <topper bgcolor="{{backgroundColour}}" theme="{{theme}}">
+            <topper background-colour="{{backgroundColour}}" layout="{{layout}}">
                 <topper-headline>
                     <ln>{{headline}}</ln>
                 </topper-headline>
                 <topper-standfirst>
                     <p>{{standfirst}}</p>
                 </topper-standfirst>
-                <topper-images>
-                    <topper-image-square width="73" height="73" fileref="/FT/Graphics/Online/Z_Undefined/Standing/Colin-Hill_sq.jpg?uuid={{squareImageUUID}}" xtransform=" scale(0.0279479 0.0279479)" tmx="2612 2612 73 73" />
-                    <topper-image-standard width="129" height="73" fileref="/FT/Graphics/Online/Master_2048x1152/2017/01/MAS_Colin-Hill.jpg?uuid={{standardImageUUID}}" xtransform=" scale(0.0633681 0.0633681)" tmx="2048 1152 129 73" />
-                    <topper-image-wide width="219" height="73" fileref="/FT/Graphics/Online/Z_Undefined/Standing/Colin-Hill_Landscape.jpg?uuid={{wideImageUUID}}" xtransform=" scale(0.0471576 0.0471576)" tmx="4645 1548 219 73" />
-                </topper-images>
             </topper>
         </lead-components>
     </lead>
+    <story>
+        <text>
+            <body>
+                <p>random text for now</p>
+                {{#imageSetID}}
+                <image-set id="{{imageSetID}}">
+                    <image-small id="U11603551664670Dp" fileref="/FT/Content/Companies/Stories/Live/GB/image%20SET/rj/New07.jpg?uuid=069ece4e-2a5d-11e7-9b32-1fc36bdf8f7d" xtransform=" scale(0.0729167 0.0729167)" tmx="2048 1152 71 84"/>
+                    <image-medium id="U11603551664670MgH" fileref="/FT/Content/Companies/Stories/Live/GB/image%20SET/rj/New06.jpg?uuid=077aa180-2a5d-11e7-9b32-1fc36bdf8f7d" xtransform=" scale(0.0842014 0.0842014)" tmx="2048 1152 150 97"/>
+                    <image-large id="U11603551664670OGB" fileref="/FT/Content/Companies/Stories/Live/GB/image%20SET/rj/New05.jpg?uuid=0848103e-2a5d-11e7-9b32-1fc36bdf8f7d" xtransform=" scale(0.0976563 0.0976563)" tmx="2048 1152 200 87"/>
+                </image-set>
+                {{/imageSetID}}
+            </body>
+        </text>
+    </story>
 </doc>

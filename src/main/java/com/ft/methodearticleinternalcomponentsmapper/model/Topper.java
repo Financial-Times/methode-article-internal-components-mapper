@@ -3,8 +3,6 @@ package com.ft.methodearticleinternalcomponentsmapper.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 public class Topper {
 
     private String headline;
@@ -12,24 +10,14 @@ public class Topper {
     private String backgroundColour;
     private String layout;
 
-    @Deprecated
-    private String theme;
-
-    @Deprecated
-    private List<Image> images;
-
     public Topper(@JsonProperty("headline") String headline,
                   @JsonProperty("standfirst") String standfirst,
                   @JsonProperty("backgroundColour") String backgroundColour,
-                  @JsonProperty("layout") String layout,
-                  @JsonProperty("theme") String theme,
-                  @JsonProperty("image") List<Image> images) {
+                  @JsonProperty("layout") String layout) {
         this.headline = headline;
         this.standfirst = standfirst;
         this.backgroundColour = backgroundColour;
         this.layout = layout;
-        this.theme = theme;
-        this.images = images;
     }
 
     public String getHeadline() {
@@ -48,11 +36,4 @@ public class Topper {
         return layout;
     }
 
-    public String getTheme() {
-        return theme;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
 }

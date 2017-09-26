@@ -1,0 +1,15 @@
+machine:
+   services:
+      - docker
+
+dependencies:
+  pre:
+    - npm install -g dredd@3.2.2
+    # downstream service
+    # expects VULCAN_HOST to be a valid path:port pair - no actual service runs in the background, though
+    - docker run -d -p 8080:8080 --env "VULCAN_HOST=localhost:9090" coco/methode-article-mapper
+    - docker run -d -p 8081:8080 --env "VULCAN_HOST=localhost:9090" coco/methode-content-placeholder-mapper
+test:
+  pre:
+    - mvn clean package -DskipTests=true
+    - dredd -d

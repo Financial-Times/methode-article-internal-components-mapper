@@ -1,0 +1,39 @@
+dry-run: null
+hookfiles: null
+language: java
+sandbox: false
+server: >-
+  java -Djava.net.preferIPv4Stack=true
+  -Ddw.methodeArticleMapper.endpointConfiguration.primaryNodes=127.0.0.1:8080
+  -Ddw.methodeContentPlaceholderMapper.endpointConfiguration.primaryNodes=127.0.0.1:8080
+  -jar target/methode-article-internal-components-mapper-1.0.0.jar
+  server methode-article-internal-components-mapper.yaml
+server-wait: 10
+init: false
+custom: {}
+names: false
+only: []
+reporter: []
+output: []
+header: []
+sorted: false
+user: null
+inline-errors: false
+details: false
+method: []
+color: true
+level: info
+timestamp: false
+silent: false
+path: []
+hooks-worker-timeout: 5000
+hooks-worker-connect-timeout: 1500
+hooks-worker-connect-retry: 500
+hooks-worker-after-connect-wait: 100
+hooks-worker-term-timeout: 5000
+hooks-worker-term-retry: 500
+hooks-worker-handler-host: 127.0.0.1
+hooks-worker-handler-port: 61321
+config: ./dredd.yml
+blueprint: api.md
+endpoint: 'http://127.0.0.1:11070'

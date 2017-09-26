@@ -18,6 +18,9 @@ CMD exec java $JAVA_OPTS \
      -Ddw.server.applicationConnectors[0].port=8080 \
      -Ddw.server.adminConnectors[0].port=8081 \
      -Ddw.methodeArticleMapper.endpointConfiguration.primaryNodes=$METHODE_ARTICLE_MAPPER_URL \
+     -Ddw.methodeContentPlaceholderMapper.endpointConfiguration.primaryNodes=$METHODE_CPH_MAPPER_URL \
+     -Ddw.documentStoreApi.endpointConfiguration.primaryNodes=$DOC_STORE_API_URL \
+     -Ddw.concordanceApi.endpointConfiguration.primaryNodes=$CONCORDANCE_API_URL \
      -Ddw.consumer.messageConsumer.queueProxyHost=http://$KAFKA_PROXY_URL \
      -Ddw.producer.messageProducer.proxyHostAndPort=$KAFKA_PROXY_URL \
      -Ddw.logging.appenders[0].logFormat="%-5p [%d{ISO8601, GMT}] %c: %X{transaction_id} %replace(%m%n[%thread]%xEx){'\n', '|'}%nopex%n" \

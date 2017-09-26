@@ -2,12 +2,10 @@ package com.ft.methodearticleinternalcomponentsmapper.messaging;
 
 import com.ft.messagequeueproducer.MessageProducer;
 import com.ft.messaging.standards.message.v1.Message;
-import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleHasNoInternalComponentsException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
 import com.ft.methodearticleinternalcomponentsmapper.model.InternalComponents;
 import com.ft.methodearticleinternalcomponentsmapper.transformation.InternalComponentsMapper;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +49,7 @@ public class MessageProducingInternalComponentsMapperTest {
     public void thatMessageIsCreatedFromMappedArticle() {
         Date lastModified = new Date();
         InternalComponents mappedArticle = new InternalComponents.Builder()
-                .withUuid(UUID.randomUUID())
+                .withUuid(UUID.randomUUID().toString())
                 .build();
         when(mapper.map(any(), eq("tid"), eq(lastModified), anyBoolean())).thenReturn(mappedArticle);
 
@@ -80,21 +78,6 @@ public class MessageProducingInternalComponentsMapperTest {
         Message deletedContentMsg = mock(Message.class);
 
         when(mapper.map(any(), anyString(), any(), eq(false))).thenThrow(MethodeArticleMarkedDeletedException.class);
-        when(messageBuilder.buildDeletedInternalComponentsMessage(uuid, tid, date)).thenReturn(deletedContentMsg);
-
-        msgProducingArticleMapper.mapInternalComponents(new EomFile.Builder().withUuid(uuid).build(), tid, date);
-
-        verify(producer).send(Collections.singletonList(deletedContentMsg));
-    }
-
-    @Test
-    public void thatMessageWithNoInternalComponentsIsSentToQueue() {
-        String tid = "tid";
-        Date date = new Date();
-        String uuid = UUID.randomUUID().toString();
-        Message deletedContentMsg = mock(Message.class);
-
-        when(mapper.map(any(), anyString(), any(), eq(false))).thenThrow(MethodeArticleHasNoInternalComponentsException.class);
         when(messageBuilder.buildDeletedInternalComponentsMessage(uuid, tid, date)).thenReturn(deletedContentMsg);
 
         msgProducingArticleMapper.mapInternalComponents(new EomFile.Builder().withUuid(uuid).build(), tid, date);

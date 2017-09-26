@@ -2,6 +2,11 @@
 <!DOCTYPE doc SYSTEM "/SysConfig/Rules/ftpsi.dtd">
 <doc>
     <lead>
+        <lead-headline>
+            <skybox-headline>
+                {{skyboxHeadline}}
+            </skybox-headline>
+        </lead-headline>
         <lead-image-set>
                    <lead-image-square
                                 fileref="/FT/Graphics/Online/Z_Undefined/2017/01/lalaland_square.jpg?uuid={{squareImageUUID}}"
@@ -15,8 +20,11 @@
         </lead-image-set>
         <lead-components>
             <content-package design-theme="{{designTheme}}" sequence="{{sequence}}" label="{{labelType}}">
+                {{#contentPackageNext}}
+                <content-package-next>{{contentPackageNext}}</content-package-next>
+                {{/contentPackageNext}}
             </content-package>
-            <topper bgcolor="{{backgroundColour}}" layout="{{layout}}">
+            <topper background-colour="{{backgroundColour}}" layout="{{layout}}">
                 <topper-headline>
                     <ln>{{headline}}</ln>
                 </topper-headline>
@@ -26,4 +34,18 @@
             </topper>
         </lead-components>
     </lead>
+    <story>
+        <text>
+            <body>
+                <p>random text for now</p>
+                {{#imageSetID}}
+                <image-set id="{{imageSetID}}">
+                    <image-small id="U11603551664670Dp" fileref="/FT/Content/Companies/Stories/Live/GB/image%20SET/rj/New07.jpg?uuid=069ece4e-2a5d-11e7-9b32-1fc36bdf8f7d" xtransform=" scale(0.0729167 0.0729167)" tmx="2048 1152 71 84"/>
+                    <image-medium id="U11603551664670MgH" fileref="/FT/Content/Companies/Stories/Live/GB/image%20SET/rj/New06.jpg?uuid=077aa180-2a5d-11e7-9b32-1fc36bdf8f7d" xtransform=" scale(0.0842014 0.0842014)" tmx="2048 1152 150 97"/>
+                    <image-large id="U11603551664670OGB" fileref="/FT/Content/Companies/Stories/Live/GB/image%20SET/rj/New05.jpg?uuid=0848103e-2a5d-11e7-9b32-1fc36bdf8f7d" xtransform=" scale(0.0976563 0.0976563)" tmx="2048 1152 200 87"/>
+                </image-set>
+                {{/imageSetID}}
+            </body>
+        </text>
+    </story>
 </doc>

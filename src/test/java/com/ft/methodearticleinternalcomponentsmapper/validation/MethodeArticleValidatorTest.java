@@ -3,25 +3,21 @@ package com.ft.methodearticleinternalcomponentsmapper.validation;
 import com.ft.jerseyhttpwrapper.ResilientClient;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMapperUnavailableException;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
-import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.header.InBoundHeaders;
 import com.sun.jersey.spi.MessageBodyWorkers;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
-
-import javax.ws.rs.core.MediaType;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,9 +40,6 @@ public class MethodeArticleValidatorTest {
     private InBoundHeaders headers;
     @Mock
     private MessageBodyWorkers workers;
-
-    @Mock
-    private ClientHandlerException clientHandlerException;
 
     @Mock
     private EomFile eomFile;
@@ -78,7 +71,7 @@ public class MethodeArticleValidatorTest {
     private static final String TRANSACTION_ID = "tid_test";
 
     @Test
-    public void thatIfValidatorServiceReturns422PublishStatusIsIneligible(){
+    public void thatIfValidatorServiceReturns422PublishStatusIsIneligible() {
         when(builder.post(ClientResponse.class)).thenReturn(clientResponseWithCode(422));
 
         PublishingStatus actual = methodeArticleValidator.getPublishingStatus(eomFile, TRANSACTION_ID, false);
@@ -87,7 +80,7 @@ public class MethodeArticleValidatorTest {
     }
 
     @Test
-    public void thatIfValidatorServiceReturns404PublishStatusIsDeleted(){
+    public void thatIfValidatorServiceReturns404PublishStatusIsDeleted() {
         when(builder.post(ClientResponse.class)).thenReturn(clientResponseWithCode(404));
 
         PublishingStatus actual = methodeArticleValidator.getPublishingStatus(eomFile, TRANSACTION_ID, false);
@@ -96,7 +89,7 @@ public class MethodeArticleValidatorTest {
     }
 
     @Test
-    public void thatIfValidatorServiceReturns200PublishStatusIsDeleted(){
+    public void thatIfValidatorServiceReturns200PublishStatusIsValid() {
         when(builder.post(ClientResponse.class)).thenReturn(clientResponseWithCode(200));
 
         PublishingStatus actual = methodeArticleValidator.getPublishingStatus(eomFile, TRANSACTION_ID, false);
@@ -105,7 +98,7 @@ public class MethodeArticleValidatorTest {
     }
 
     @Test(expected = MethodeArticleMapperUnavailableException.class)
-    public void thatIfValidatorServiceReturnsNonExpectedStatusCodeMethodeArticleMapperUnavailableExceptionIsThrown(){
+    public void thatIfValidatorServiceReturnsNonExpectedStatusCodeMethodeArticleMapperUnavailableExceptionIsThrown() {
         when(builder.post(ClientResponse.class)).thenReturn(clientResponseWithCode(500));
         methodeArticleValidator.getPublishingStatus(eomFile, TRANSACTION_ID, false);
     }

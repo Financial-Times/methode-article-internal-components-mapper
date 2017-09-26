@@ -5,13 +5,13 @@ import com.google.common.base.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ft.jerseyhttpwrapper.config.EndpointConfiguration;
 
-public class MethodeArticleMapperConfiguration {
+public class MethodeMapperConfiguration {
     private final EndpointConfiguration endpointConfiguration;
 
     private final ConnectionConfiguration connectionConfiguration;
 
-    public MethodeArticleMapperConfiguration(@JsonProperty("endpointConfiguration") EndpointConfiguration endpointConfiguration,
-                                             @JsonProperty("connectionConfig") ConnectionConfiguration connectionConfiguration) {
+    public MethodeMapperConfiguration(@JsonProperty("endpointConfiguration") EndpointConfiguration endpointConfiguration,
+                                      @JsonProperty("connectionConfig") ConnectionConfiguration connectionConfiguration) {
         this.endpointConfiguration = endpointConfiguration;
         this.connectionConfiguration = connectionConfiguration;
     }

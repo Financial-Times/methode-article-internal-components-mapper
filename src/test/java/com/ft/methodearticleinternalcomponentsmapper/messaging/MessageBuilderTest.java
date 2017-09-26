@@ -54,7 +54,7 @@ public class MessageBuilderTest {
     @Test
     public void thatMsgHeadersAreSet() throws JsonProcessingException {
         InternalComponents content = new InternalComponents.Builder()
-                .withUuid(UUID)
+                .withUuid(UUID.toString())
                 .withLastModified(new Date())
                 .withPublishReference(PUBLISH_REFERENCE)
                 .build();
@@ -76,7 +76,7 @@ public class MessageBuilderTest {
         String lastModified = "2016-11-02T07:59:24.715Z";
         Date lastModifiedDate = Date.from(Instant.parse(lastModified));
         InternalComponents content = new InternalComponents.Builder()
-                .withUuid(UUID)
+                .withUuid(UUID.toString())
                 .withLastModified(lastModifiedDate)
                 .withPublishReference(PUBLISH_REFERENCE)
                 .build();
@@ -117,7 +117,7 @@ public class MessageBuilderTest {
     @Test (expected = MethodeArticleInternalComponentsMapperException.class)
     public void thatMethodeArticleMapperExceptionIsThrownIfMarshallingToStringFails() throws JsonProcessingException {
         InternalComponents list = new InternalComponents.Builder()
-                .withUuid(UUID)
+                .withUuid(UUID.toString())
                 .withLastModified(new Date())
                 .withPublishReference(PUBLISH_REFERENCE)
                 .build();

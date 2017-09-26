@@ -1,46 +1,3 @@
-financialTimesBrandId: http://api.ft.com/things/dbb0bdae-1f0c-11e4-b0cb-b2227cce2b54
-
-videoSiteConfig:
-    - urlPattern: "https?://www.youtube.com/watch\\?v=(?<id>[A-Za-z0-9_-]+)"
-      template: "https://www.youtube.com/watch?v=%s"
-      embedded: true
-      retainedParams: ["t"]
-      forceHTTPS: true
-
-    - urlPattern: "https?://www.youtube.com/embed/(?<id>[A-Za-z0-9_-]+)"
-      template: "https://www.youtube.com/watch?v=%s"
-      embedded: false
-      convertedParams:
-          - convertFromParameter: "start"
-            convertedToParameter: "t"
-            conversionTemplate: "%ss"
-      forceHTTPS: true
-
-    - urlPattern: "https?://youtu.be/(?<id>[A-Za-z0-9_-]+)"
-      template: "https://www.youtube.com/watch?v=%s"
-      embedded: false
-      retainedParams: ["t"]
-      forceHTTPS: true
-
-    - urlPattern: "https?://vimeo.com/(?<id>[0-9]+)"
-      template: null
-      embedded: false
-      forceHTTPS: true
-
-    - urlPattern: "//player.vimeo.com/video/(?<id>[0-9]+)"
-      template: "https://www.vimeo.com/%s"
-      embedded: true
-      forceHTTPS: true
-
-    - urlPattern: "https?://video.ft.com/(?<id>[0-9]+)/"
-      template: null
-      embedded: false
-
-interactiveGraphicsWhiteList: [ "http://interactive.ftdata.co.uk/(?!(_other/ben/twitter)|(widgets/audio)).*",
-    "http://(www.)?ft.com/ig/(?!widgets/widgetBrowser/audio).*",
-    "http://ig.ft.com/features.*",
-    "http://ft.cartodb.com/.*" ]
-
 server:
 
   applicationConnectors:
@@ -74,6 +31,18 @@ logging:
 methodeArticleMapper:
     endpointConfiguration:
         shortName: "methodeArticleMapper"
+        path: map
+        jerseyClient:
+            timeout: 2000ms
+        primaryNodes: ["localhost:8080:8080", "localhost:8080:8080"]
+        secondaryNodes: null
+    connectionConfig:
+        numberOfConnectionAttempts: 3
+        timeoutMultiplier: 1000
+
+methodeContentPlaceholderMapper:
+    endpointConfiguration:
+        shortName: "methodeContentPlaceholderMapper"
         path: map
         jerseyClient:
             timeout: 2000ms
@@ -121,3 +90,80 @@ producer:
     panicGuideUrl: "https://dewey.ft.com/up-maicm.html"
 
 contentUriPrefix: http://methode-article-internal-components-mapper.svc.ft.com/internalcomponents
+
+videoSiteConfig:
+    - urlPattern: "https?://www.youtube.com/watch\\?v=(?<id>[A-Za-z0-9_-]+)"
+      template: "https://www.youtube.com/watch?v=%s"
+      embedded: true
+      retainedParams: ["t"]
+      forceHTTPS: true
+
+    - urlPattern: "https?://www.youtube.com/embed/(?<id>[A-Za-z0-9_-]+)"
+      template: "https://www.youtube.com/watch?v=%s"
+      embedded: false
+      convertedParams:
+          - convertFromParameter: "start"
+            convertedToParameter: "t"
+            conversionTemplate: "%ss"
+      forceHTTPS: true
+
+    - urlPattern: "https?://youtu.be/(?<id>[A-Za-z0-9_-]+)"
+      template: "https://www.youtube.com/watch?v=%s"
+      embedded: false
+      retainedParams: ["t"]
+      forceHTTPS: true
+
+    - urlPattern: "https?://vimeo.com/(?<id>[0-9]+)"
+      template: null
+      embedded: false
+      forceHTTPS: true
+
+    - urlPattern: "//player.vimeo.com/video/(?<id>[0-9]+)"
+      template: "https://www.vimeo.com/%s"
+      embedded: true
+      forceHTTPS: true
+
+    - urlPattern: "https?://video.ft.com/(?<id>[0-9]+)/"
+      template: null
+      embedded: false
+
+interactiveGraphicsWhiteList: [ "http://interactive.ftdata.co.uk/(?!(_other/ben/twitter)|(widgets/audio)).*",
+    "http://(www.)?ft.com/ig/(?!widgets/widgetBrowser/audio).*",
+    "http://ig.ft.com/features.*",
+    "http://ft.cartodb.com/.*" ]
+
+documentStoreApi:
+    endpointConfiguration:
+        shortName: "documentStoreApi"
+        path: "/content"
+        jerseyClient:
+            timeout: 2000ms
+        primaryNodes: ["localhost:8080:8080", "localhost:8080:8080"]
+        secondaryNodes: null
+    connectionConfig:
+        numberOfConnectionAttempts: 3
+        timeoutMultiplier: 1000
+
+concordanceApi:
+    endpointConfiguration:
+        shortName: "concordance"
+        jerseyClient:
+            timeout: 5000ms
+        primaryNodes: ["localhost:8080:8080", "localhost:8080:8080"]
+        secondaryNodes: null
+        path: "/concordances"
+    connectionConfiguration:
+        numberOfConnectionAttempts: 3
+        timeoutMultiplier: 1000
+
+contentTypeTemplates:
+  http://www.ft.com/ontology/content/Article: /content/{{id}}
+  http://www.ft.com/ontology/content/ImageSet: /content/{{id}}
+  http://www.ft.com/ontology/content/MediaResource: /content/{{id}}
+  http://www.ft.com/ontology/content/Video: /content/{{id}}
+  http://www.ft.com/ontology/company/PublicCompany: /organisations/{{id}}
+  http://www.ft.com/ontology/content/ContentPackage: /content/{{id}}
+  http://www.ft.com/ontology/content/Content: /content/{{id}}
+  http://www.ft.com/ontology/content/Image: /content/{{id}}
+
+apiHost: "api.ft.com"

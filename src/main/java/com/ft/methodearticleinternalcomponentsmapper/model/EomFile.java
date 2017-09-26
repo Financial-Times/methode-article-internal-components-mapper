@@ -9,7 +9,7 @@ import java.net.URI;
 public class EomFile {
 
     public static final String SOURCE_ATTR_XPATH =
-        "/ObjectMetadata//EditorialNotes/Sources/Source/SourceCode";
+            "/ObjectMetadata//EditorialNotes/Sources/Source/SourceCode";
 
     private final String uuid;
     private final String type;
