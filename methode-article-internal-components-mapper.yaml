@@ -57,7 +57,7 @@ consumer:
     connectionTimeout: 2 seconds
     timeout: 25 seconds
   messageConsumer:
-    queueProxyHost: http://localhost:8080
+    queueProxyHost: localhost:8080
     queue: kafka
     topicName: NativeCmsPublicationEvents
     groupName: MethodeArticleInternalComponentsMapper
