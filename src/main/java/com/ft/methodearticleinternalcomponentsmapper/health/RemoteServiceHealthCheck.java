@@ -22,6 +22,7 @@ public class RemoteServiceHealthCheck extends AdvancedHealthCheck {
     private final String panicGuideUrl;
     private final String serviceName;
     private final Client client;
+    private final String hostHeader;
     private final URI remoteServiceUri;
 
     public RemoteServiceHealthCheck(
@@ -30,6 +31,7 @@ public class RemoteServiceHealthCheck extends AdvancedHealthCheck {
             String hostName,
             int port,
             String path,
+            String hostHeader,
             int severity,
             String businessImpact,
             String panicGuideUrl
@@ -37,6 +39,7 @@ public class RemoteServiceHealthCheck extends AdvancedHealthCheck {
         super(String.format("%s is up and running", serviceName));
         this.serviceName = serviceName;
         this.client = client;
+        this.hostHeader = hostHeader;
         this.severity = severity;
         this.businessImpact = businessImpact;
         this.panicGuideUrl = panicGuideUrl;
@@ -51,7 +54,7 @@ public class RemoteServiceHealthCheck extends AdvancedHealthCheck {
     public AdvancedResult checkAdvanced() throws Exception {
         ClientResponse response = null;
         try {
-            response = client.resource(remoteServiceUri).get(ClientResponse.class);
+            response = client.resource(remoteServiceUri).header("Host", hostHeader).get(ClientResponse.class);
             if (response.getStatus() != 200) {
                 String message = String.format("Unexpected status : %s", response.getStatus());
                 return reportUnhealthy(message);

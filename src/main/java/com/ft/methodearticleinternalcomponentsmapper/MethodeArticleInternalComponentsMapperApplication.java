@@ -148,6 +148,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 methodeArticleMapperClient,
                 methodeArticleMapperEndpointConfiguration.getHost(),
                 methodeArticleMapperEndpointConfiguration.getPort(),
+                "methode-article-mapper",
                 "/__health",
                 1,
                 "Internal components of newly published Methode articles will not be available from the InternalContent API",

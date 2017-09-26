@@ -110,6 +110,8 @@ producer:
     timeout: 25 seconds
   messageProducer:
     proxyHostAndPort: localhost:8080
+    additionalHeaders:
+      Host: kafka
     topicName: CmsPublicationEvents
   healthCheck:
     name: "Can connect producer to kafka-proxy"
