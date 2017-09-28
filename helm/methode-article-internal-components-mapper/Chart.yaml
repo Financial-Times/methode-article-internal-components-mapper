@@ -1,0 +1,4 @@
+apiVersion: v1
+description: methode-article-internal-components-mapper Helm chart for Kubernetes
+name: methode-article-internal-components-mapper
+version: 0.0.0  # this entry can be left untouched as it is automatically handled by Jenkins pipeline

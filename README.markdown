@@ -20,15 +20,15 @@ Note: methode-article-mapper, document-store-api and public-concordances-api are
 
 ## Endpoints
 
-The transformation which takes place at each valid Kafka message can also be triggered by the `/map` endpoint.   
+The transformation which takes place at each valid Kafka message can also be triggered by the `/map` endpoint.
 
 ### API
 
 The internal components model is documented by the description of this non-public `/map` API.
 
-For Blueprint style documentation, see [here](api.md). 
+For Blueprint style documentation, see [here](api.md).
 
-API spec validation happens by `dredd`. It's linked with circleci, but to run it locally just type `dredd` in the project's top-level directory. 
+API spec validation happens by `dredd`. It's linked with circleci, but to run it locally just type `dredd` in the project's top-level directory.
 
 ### Posting content to be mapped
 
@@ -48,7 +48,7 @@ Health and gtg are based on methode-article-mapper's health endpoint, and kafka 
 
 For article validation the service leverages on methode article mapper's `/map` endpoint.
 
-## Example of transformation output 
+## Example of transformation output
 You can find an example of a transformed article below. 
 
 ```
