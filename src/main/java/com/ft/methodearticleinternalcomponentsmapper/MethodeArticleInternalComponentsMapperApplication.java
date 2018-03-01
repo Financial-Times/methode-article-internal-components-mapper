@@ -201,7 +201,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 docStoreApiConfig.getEndpointConfiguration().getPort(),
                 "/__gtg",
                 docStoreApiConfig.getHostHeader(),
-                1,
+                2,
                 "Internal components of newly published Methode articles will not be available from the InternalContent API.",
                 "https://dewey.ft.com/document-store-api"
         );
@@ -216,7 +216,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 concordancesApiConfig.getEndpointConfiguration().getPort(),
                 "/__gtg",
                 concordancesApiConfig.getHostHeader(),
-                1,
+                2,
                 "Internal components of newly published Methode articles will not be available from the InternalContent API.",
                 "https://dewey.ft.com/public-concordances-api"
         );
@@ -231,7 +231,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 methodeArticleMapperConfig.getEndpointConfiguration().getPort(),
                 "/__gtg",
                 methodeArticleMapperConfig.getHostHeader(),
-                1,
+                2,
                 "Internal components of newly published Methode articles will not be available from the InternalContent API",
                 "https://dewey.ft.com/up-maicm.html");
     }
@@ -245,7 +245,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 methodeContentPlaceholderMapperConfig.getEndpointConfiguration().getPort(),
                 "/__gtg",
                 methodeContentPlaceholderMapperConfig.getHostHeader(),
-                1,
+                2,
                 "Internal components of newly published Methode content placeholders will not be available from the InternalContent API",
                 "https://dewey.ft.com/up-mcpm.html");
     }

@@ -9,6 +9,7 @@ service:
   MCPMUrl: "methode-content-placeholder-mapper:8080"
   DocStoreUrl: "document-store-api:8080"
   ConcordanceUrl: "public-concordances-api:8080"
+  isResilient: "false"
 replicaCount: 2
 image:
   repository: coco/methode-article-internal-components-mapper
