@@ -100,6 +100,7 @@ public class MethodeBodyTransformationXMLEventHandlerRegistry extends XMLEventHa
                 "ol", "ul", "li", "p", "hr"
         );
         registerStartAndEndElementEventHandler(new PodcastPromoXmlEventHandler(new PodcastPromoXMLParser()), "podcast-promo");
+        registerStartAndEndElementEventHandler(new RetainXMLEventHandler(), "marketdata");
 
         // Handle slideshows, i.e. where have <a type="slideshow">
         // For these elements if the attribute is missing use the fallback handler

@@ -1681,6 +1681,13 @@ public class BodyProcessingFieldTransformerFactoryTest {
         checkTransformation(originalContent, transformedContent);
     }
 
+    @Test
+    public void shouldTransformMarketData() {
+        String originalContent = "<body><marketdata figicode=\"somefigicode\" startdata=\"some date\" live-until=\"publish date plus 1 week\"/></body>";
+        String transformedContent = "<body><marketdata figicode=\"somefigicode\" startdata=\"some date\" live-until=\"publish date plus 1 week\"/></body>";
+        checkTransformation(originalContent, transformedContent);
+    }
+
     private void checkTransformation(String originalBody, String expectedTransformedBody, Map.Entry<String, Object>... contextData) {
         String actualTransformedBody = bodyTransformer.transform(originalBody, TRANSACTION_ID, contextData);
 
