@@ -2,12 +2,14 @@ package com.ft.methodearticleinternalcomponentsmapper.transformation;
 
 import com.ft.bodyprocessing.BodyProcessor;
 import com.ft.methodearticleinternalcomponentsmapper.exception.InvalidMethodeContentException;
-import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMarkedDeletedException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMissingFieldException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.TransformationException;
 import com.ft.methodearticleinternalcomponentsmapper.model.AlternativeStandfirsts;
 import com.ft.methodearticleinternalcomponentsmapper.model.AlternativeTitles;
+import com.ft.methodearticleinternalcomponentsmapper.model.Block;
+import com.ft.methodearticleinternalcomponentsmapper.model.Content;
 import com.ft.methodearticleinternalcomponentsmapper.model.Design;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
 import com.ft.methodearticleinternalcomponentsmapper.model.Image;
@@ -25,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -66,11 +69,13 @@ public class InternalComponentsMapper {
     interface Type {
         String CONTENT_PACKAGE = "ContentPackage";
         String ARTICLE = "Article";
+        String DYNAMIC_CONTENT = "DynamicContent";
     }
 
     public interface SourceCode {
         String FT = "FT";
         String CONTENT_PLACEHOLDER = "ContentPlaceholder";
+        String DynamicContent = "DynamicContent";
     }
 
     private final FieldTransformer bodyTransformer;
@@ -97,6 +102,8 @@ public class InternalComponentsMapper {
     private static final String XPATH_DESIGN_LAYOUT = "/ObjectMetadata/OutputChannels/DIFTcom/DesignLayout";
     private static final String XPATH_PUSH_NOTIFICATION_COHORT = "/ObjectMetadata/OutputChannels/DIFTcom/pushNotification";
     private static final String XPATH_PUSH_NOTIFICATION_TEXT = "/doc/lead/push-notification-text/ln";
+    private static final String BLOCKS_XPATH = "/doc/blocks//block";
+
     private static final Set<String> BLOG_CATEGORIES =
             ImmutableSet.of("blog", "webchat-live-blogs", "webchat-live-qa", "webchat-markets-live", "fastft");
 
@@ -106,6 +113,7 @@ public class InternalComponentsMapper {
     private static final String END_BODY = "</body>";
     private static final String EMPTY_VALIDATED_BODY = "<body></body>";
     private static final String PUSH_NOTIFICATION_COHORT_NONE = "None";
+    private static final String BLOCK_TYPE = "html-block";
 
     public InternalComponentsMapper(FieldTransformer bodyTransformer,
                                     BodyProcessor htmlFieldProcessor,
@@ -122,11 +130,16 @@ public class InternalComponentsMapper {
     public InternalComponents map(EomFile eomFile, String transactionId, Date lastModified, boolean preview) {
         try {
             UUID uuid = UUID.fromString(eomFile.getUuid());
+            final XPath xpath = XPathFactory.newInstance().newXPath();
+            final Document attributesDocument = getAttributesDocument(eomFile);
+            final Document valueDocument = getValueDocument(eomFile);
 
-            String sourceCode = retrieveSourceCode(eomFile.getAttributes());
-            if (!SourceCode.FT.equals(sourceCode) && !SourceCode.CONTENT_PLACEHOLDER.equals(sourceCode)) {
+            String sourceCode = xpath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
+            if (!SourceCode.FT.equals(sourceCode) && !SourceCode.CONTENT_PLACEHOLDER.equals(sourceCode) && !SourceCode.DynamicContent.equals(sourceCode)) {
                 throw new MethodeArticleNotEligibleForPublishException(uuid);
             }
+
+            final String type = determineType(xpath, attributesDocument, sourceCode);
 
             Boolean previewParam = SourceCode.FT.equals(sourceCode) ? preview : null;
             PublishingStatus status = articleValidators.get(sourceCode).getPublishingStatus(eomFile, transactionId, previewParam);
@@ -134,12 +147,8 @@ public class InternalComponentsMapper {
                 case INELIGIBLE:
                     throw new MethodeArticleNotEligibleForPublishException(uuid);
                 case DELETED:
-                    throw new MethodeArticleMarkedDeletedException(uuid);
+                    throw new MethodeMarkedDeletedException(uuid, type);
             }
-
-            final XPath xpath = XPathFactory.newInstance().newXPath();
-            final Document attributesDocument = getAttributesDocument(eomFile);
-            final Document valueDocument = getValueDocument(eomFile);
 
             final Design design = extractDesign(xpath, valueDocument, attributesDocument);
             final TableOfContents tableOfContents = extractTableOfContents(xpath, valueDocument);
@@ -156,6 +165,7 @@ public class InternalComponentsMapper {
             final Summary summary = extractSummary(xpath, valueDocument, transactionId, uuid.toString());
             final String pushNotificationsCohort = extractPushNotificationsCohort(xpath, attributesDocument);
             final String pushNotificationsText = extractPushNotificationsText(xpath, valueDocument);
+            final List<Block> blocks = getBlocks(xpath, valueDocument, type, transactionId);
 
             InternalComponents.Builder internalComponentsBuilder = InternalComponents.builder()
                     .withUuid(uuid.toString())
@@ -170,12 +180,17 @@ public class InternalComponentsMapper {
                     .withAlternativeStandfirsts(alternativeStandfirsts)
                     .withSummary(summary)
                     .withPushNotificationsCohort(pushNotificationsCohort)
-                    .withPushNotificationsText(pushNotificationsText);
+                    .withPushNotificationsText(pushNotificationsText)
+                    .withBlocks(blocks);
 
             if (SourceCode.CONTENT_PLACEHOLDER.equals(sourceCode)) {
                 if (isWordpressBlogContentPlaceholder(eomFile, xpath)) {
                     return internalComponentsBuilder.withUuid(resolvePlaceholderUuid(eomFile, transactionId, uuid, xpath)).build();
                 }
+                return internalComponentsBuilder.build();
+            }
+
+            if(SourceCode.DynamicContent.equals(sourceCode)) {
                 return internalComponentsBuilder.build();
             }
 
@@ -221,15 +236,10 @@ public class InternalComponentsMapper {
         return writer.toString();
     }
 
-    private String retrieveSourceCode(String attributes) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
-        Document attributesDocument = getDocumentBuilder().parse(new InputSource(new StringReader(attributes)));
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        return xpath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
-    }
-
     private String transformBody(XPath xpath, String sourceBodyXML, Document attributesDocument, Document valueDocument, String transactionId, UUID uuid, boolean preview) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, TransformerException {
         TransformationMode mode = preview ? TransformationMode.PREVIEW : TransformationMode.PUBLISH;
-        final String type = determineType(xpath, attributesDocument);
+        String sourceCode = xpath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
+        final String type = determineType(xpath, attributesDocument, sourceCode);
 
         final String transformedBody = transformField(sourceBodyXML, bodyTransformer, transactionId, Maps.immutableEntry("uuid", uuid.toString()));
         final String validatedTransformedBody = validateBody(mode, type, transformedBody, uuid);
@@ -238,10 +248,14 @@ public class InternalComponentsMapper {
         return postProcessedTransformedBody;
     }
 
-    private String determineType(final XPath xpath, final Document attributesDocument) throws XPathExpressionException, TransformerException {
+    private String determineType(final XPath xpath, final Document attributesDocument, String sourceCode) throws XPathExpressionException {
         final String isContentPackage = xpath.evaluate(XPATH_CONTENT_PACKAGE, attributesDocument);
         if (Boolean.TRUE.toString().equalsIgnoreCase(isContentPackage)) {
             return CONTENT_PACKAGE;
+        }
+
+        if(sourceCode.equals(SourceCode.DynamicContent)) {
+            return Type.DYNAMIC_CONTENT;
         }
 
         return Type.ARTICLE;
@@ -445,6 +459,12 @@ public class InternalComponentsMapper {
         return documentBuilder.parse(new InputSource(new StringReader(eomFile.getAttributes())));
     }
 
+    private String getNodeValueAsString(Node node) throws TransformerException {
+        String nodeAsString = convertNodeToStringReturningEmptyIfNull(node);
+        return nodeAsString.replace("<" + node.getNodeName() + ">", "").replace("</" + node.getNodeName() + ">", "")
+                .replace("<"+ node.getNodeName() + "/>", "");
+    }
+
     private String extractListItemWiredIndexType(XPath xPath, Document attributesDocument) throws XPathExpressionException {
         return xPath.evaluate(XPATH_LIST_ITEM_TYPE, attributesDocument);
     }
@@ -492,5 +512,28 @@ public class InternalComponentsMapper {
         }
 
         return pushNotificationsText;
+    }
+
+    private List<Block> getBlocks(XPath xpath, Document value, String type, String txID) throws XPathExpressionException, TransformerException {
+        if (!Type.DYNAMIC_CONTENT.equals(type)) {
+            return null;
+        }
+        List<Block> resultedBlocks = new ArrayList<>();
+
+        NodeList xmlBlocks = (NodeList) xpath.compile(BLOCKS_XPATH).evaluate(value, XPathConstants.NODESET);
+        for (int i = 0; i < xmlBlocks.getLength(); i++) {
+            Node currentBlock = xmlBlocks.item(i);
+            Node keyNode = (Node) xpath.evaluate("block-name", currentBlock, XPathConstants.NODE);
+            Node valueXMLNode = (Node) xpath.evaluate("block-html-value", currentBlock, XPathConstants.NODE);
+
+            String key = getNodeValueAsString(keyNode);
+            String valueXML = getNodeValueAsString(valueXMLNode);
+            String transformedValueXML = bodyTransformer.transform("<body>" + valueXML + "</body>", txID);
+            String valueXMLWithoutBodyTags = transformedValueXML.replace("<body>", "").replace("</body>", "");
+
+            resultedBlocks.add(new Block(key, valueXMLWithoutBodyTags, BLOCK_TYPE));
+        }
+
+        return resultedBlocks;
     }
 }

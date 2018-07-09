@@ -3,7 +3,7 @@ package com.ft.methodearticleinternalcomponentsmapper.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.ft.api.util.transactionid.TransactionIdUtils;
 import com.ft.methodearticleinternalcomponentsmapper.exception.InvalidMethodeContentException;
-import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMarkedDeletedException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleUnsupportedSourceCodeException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.TransformationException;
@@ -44,7 +44,7 @@ public class MapResource {
         String transactionId = TransactionIdUtils.getTransactionIdOrDie(httpHeaders);
         try {
             return internalComponentsMapper.map(eomFile, transactionId, new Date(), preview);
-        } catch (MethodeArticleMarkedDeletedException e) {
+        } catch (MethodeMarkedDeletedException e) {
             throw new WebApplicationException(HttpStatus.SC_NOT_FOUND);
         } catch (MethodeArticleNotEligibleForPublishException | InvalidMethodeContentException
                 | MethodeArticleUnsupportedSourceCodeException e) {

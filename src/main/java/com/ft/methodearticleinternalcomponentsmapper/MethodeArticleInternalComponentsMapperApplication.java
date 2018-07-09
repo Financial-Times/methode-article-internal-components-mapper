@@ -116,6 +116,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
         Map<String, MethodeArticleValidator> articleValidators = new HashMap<>();
         articleValidators.put(InternalComponentsMapper.SourceCode.FT, new MethodeArticleValidator(mamClient, mamUri, mamConfiguration.getHostHeader()));
         articleValidators.put(InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER, new MethodeArticleValidator(mcpmClient, mcpmUri, mcpmConfiguration.getHostHeader()));
+        articleValidators.put(InternalComponentsMapper.SourceCode.DynamicContent, new MethodeArticleValidator(mamClient, mamUri, mamConfiguration.getHostHeader()));
         InternalComponentsMapper eomFileProcessor = new InternalComponentsMapper(
                 new BodyProcessingFieldTransformerFactory(documentStoreApiClient,
                         new VideoMatcher(configuration.getVideoSiteConfig()),

@@ -99,6 +99,6 @@ public class NativeCmsPublicationEventsListener implements MessageListener {
             // and fall through, to return false
         }
 
-        return "FT".equals(sourceCode) || "ContentPlaceholder".equals(sourceCode);
+        return "FT".equals(sourceCode) || "ContentPlaceholder".equals(sourceCode) || "DynamicContent".equals(sourceCode);
     }
 }

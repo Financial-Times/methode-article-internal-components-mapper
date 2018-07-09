@@ -3,7 +3,9 @@
 <ObjectMetadata>
     <OutputChannels>
         <DIFTcom>
+            {{#isContentPackage}}
             <isContentPackage>{{isContentPackage}}</isContentPackage>
+            {{/isContentPackage}}
             {{#articleImage}}
             <DIFTcomArticleImage>{{articleImage}}</DIFTcomArticleImage>
             {{/articleImage}}

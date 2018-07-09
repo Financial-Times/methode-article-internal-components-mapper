@@ -1,7 +1,7 @@
 package com.ft.methodearticleinternalcomponentsmapper.resources;
 
 import com.ft.api.util.transactionid.TransactionIdUtils;
-import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleMarkedDeletedException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
 import com.ft.methodearticleinternalcomponentsmapper.transformation.InternalComponentsMapper;
@@ -34,6 +34,7 @@ public class MapResourceTest {
     private InternalComponentsMapper internalComponentsMapper = mock(InternalComponentsMapper.class);
     private EomFile eomFile = mock(EomFile.class);
     private UUID uuid = UUID.randomUUID();
+    private String type = "DynamicContent";
 
     private MapResource mapResource = new MapResource(internalComponentsMapper);
 
@@ -59,7 +60,7 @@ public class MapResourceTest {
     public void shouldThrow404ExceptionWhenContentIsMarkedAsDeletedInMethode() {
 
         when(internalComponentsMapper.map(eq(eomFile), eq(TRANSACTION_ID), any(), anyBoolean()))
-                .thenThrow(new MethodeArticleMarkedDeletedException(uuid));
+                .thenThrow(new MethodeMarkedDeletedException(uuid, type));
         try {
             mapResource.map(false, eomFile, httpHeaders);
             fail("No exception was thrown, but expected one.");
