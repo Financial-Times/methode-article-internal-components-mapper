@@ -11,11 +11,13 @@ import com.ft.bodyprocessing.xml.eventhandlers.SimpleTransformBlockElementEventH
 import com.ft.bodyprocessing.xml.eventhandlers.SimpleTransformTagXmlEventHandler;
 import com.ft.bodyprocessing.xml.eventhandlers.StripElementAndContentsXMLEventHandler;
 import com.ft.bodyprocessing.xml.eventhandlers.StripXMLEventHandler;
+import com.ft.bodyprocessing.xml.eventhandlers.XMLEventHandler;
 import com.ft.bodyprocessing.xml.eventhandlers.XMLEventHandlerRegistry;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.StartElement;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MethodeBodyTransformationXMLEventHandlerRegistry extends XMLEventHandlerRegistry {
 
@@ -101,29 +103,24 @@ public class MethodeBodyTransformationXMLEventHandlerRegistry extends XMLEventHa
         );
         registerStartAndEndElementEventHandler(new PodcastPromoXmlEventHandler(new PodcastPromoXMLParser()), "podcast-promo");
 
-        // Handle slideshows, i.e. where have <a type="slideshow">
-        // For these elements if the attribute is missing use the fallback handler
-        registerStartAndEndElementEventHandler(new SlideshowEventHandler(new SlideshowXMLParser(), new LinkTagXMLEventHandler("title", "alt"), caselessMatcher("type", "slideshow"), canonicalUrlTemplate), "a");
-        registerEndElementEventHandler(new LinkTagXMLEventHandler(), "a");
+        Map<String, XMLEventHandler> linkHandlers = new HashMap<>();
+        linkHandlers.put("slideshow", new SlideshowEventHandler(new SlideshowXMLParser(), canonicalUrlTemplate));
+        linkHandlers.put("DynamicContent", new DynamicContentXMLEventHandler(new DynamicContentXMLParser()));
+        MultipleHandlersXMLEventHandler linksMultipleHandlersXMLEventHandler = new MultipleHandlersXMLEventHandler(linkHandlers, new LinkTagXMLEventHandler("title", "alt"), "type");
+        registerStartAndEndElementEventHandler(linksMultipleHandlersXMLEventHandler, "a");
     }
 
     public static StartElementMatcher caselessMatcher(final String attributeName, final String attributeValue) {
-        return new StartElementMatcher() {
-            @Override
-            public boolean matches(final StartElement element) {
-                final Attribute channel = element.getAttributeByName(new QName(attributeName));
-                return (channel == null || !attributeValue.equalsIgnoreCase(channel.getValue())) ? false : true;
-            }
+        return element -> {
+            final Attribute channel = element.getAttributeByName(new QName(attributeName));
+            return channel != null && attributeValue.equalsIgnoreCase(channel.getValue());
         };
     }
 
     public static StartElementMatcher attributeNameMatcher(final String attributeName) {
-        return new StartElementMatcher() {
-            @Override
-            public boolean matches(final StartElement element) {
-                final Attribute channel = element.getAttributeByName(new QName(attributeName));
-                return (channel == null) ? false : true;
-            }
+        return element -> {
+            final Attribute channel = element.getAttributeByName(new QName(attributeName));
+            return channel != null;
         };
     }
 }

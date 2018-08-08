@@ -69,6 +69,7 @@ public class BodyProcessingFieldTransformerFactory implements FieldTransformerFa
                 new DOMTransformingBodyProcessor(xpathHandlers),
                 new ImageExtractorBodyProcessor(),
                 new PromoBoxExtractorBodyProcessor(),
+                new DynamicContentExtractorBodyProcessor(),
                 stAXTransformingBodyProcessor(),
                 new MethodeLinksBodyProcessor(documentStoreApiClient, canonicalUrlTemplate),
                 new ModularXsltBodyProcessor(xslts()),

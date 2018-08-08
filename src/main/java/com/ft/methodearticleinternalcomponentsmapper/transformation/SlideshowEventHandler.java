@@ -3,7 +3,6 @@ package com.ft.methodearticleinternalcomponentsmapper.transformation;
 import com.ft.bodyprocessing.BodyProcessingContext;
 import com.ft.bodyprocessing.writer.BodyWriter;
 import com.ft.bodyprocessing.xml.eventhandlers.BaseXMLEventHandler;
-import com.ft.bodyprocessing.xml.eventhandlers.XMLEventHandler;
 import com.ft.bodyprocessing.xml.eventhandlers.XmlParser;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
@@ -27,40 +26,26 @@ public class SlideshowEventHandler extends BaseXMLEventHandler {
     public static final String DATA_EMBEDDED = "data-embedded";
     public static final String YEP = "true";
 
-    private XMLEventHandler fallbackEventHandler;
     private XmlParser<SlideshowData> slideshowXMLParser;
-    private final StartElementMatcher matcher;
     private String slideshowUrlTemplate;
 
-    public SlideshowEventHandler(XmlParser<SlideshowData> slideshowXMLParser,
-                                 XMLEventHandler fallbackEventHandler,
-                                 final StartElementMatcher matcher,
-                                 String slideshowUrlTemplate) {
+    protected SlideshowEventHandler(XmlParser<SlideshowData> slideshowXMLParser,
+                                    String slideshowUrlTemplate) {
 
-        checkArgument(fallbackEventHandler != null, "fallbackEventHandler cannot be null");
         checkArgument(slideshowXMLParser != null, "slideshowXMLParser cannot be null");
-        checkArgument(matcher != null, "matcher cannot be null");
         checkArgument(slideshowUrlTemplate != null, "slideshowUrlTemplate cannot be null");
 
-        this.fallbackEventHandler = fallbackEventHandler;
         this.slideshowXMLParser = slideshowXMLParser;
-        this.matcher = matcher;
         this.slideshowUrlTemplate = slideshowUrlTemplate;
     }
 
     @Override
     public void handleStartElementEvent(final StartElement event, final XMLEventReader xmlEventReader, final BodyWriter eventWriter,
                                         final BodyProcessingContext bodyProcessingContext) throws XMLStreamException {
-        if (!matcher.matches(event)) {
-            fallbackEventHandler.handleStartElementEvent(event, xmlEventReader, eventWriter, bodyProcessingContext);
-        } else {
-
-            SlideshowData dataBean = parseElementData(event, xmlEventReader, bodyProcessingContext);
-
-            if (dataBean.isAllRequiredDataPresent()) {
-                transformFieldContentToStructuredFormat(dataBean, bodyProcessingContext);
-                writeSlideshowElement(eventWriter, dataBean);
-            }
+        SlideshowData dataBean = parseElementData(event, xmlEventReader, bodyProcessingContext);
+        if (dataBean.isAllRequiredDataPresent()) {
+            transformFieldContentToStructuredFormat(dataBean, bodyProcessingContext);
+            writeSlideshowElement(eventWriter, dataBean);
         }
     }
 

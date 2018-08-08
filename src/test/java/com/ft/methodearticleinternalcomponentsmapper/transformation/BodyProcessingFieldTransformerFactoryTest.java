@@ -2186,6 +2186,50 @@ public class BodyProcessingFieldTransformerFactoryTest {
         checkTransformation(originalContent, transformedContent);
     }
 
+    @Test
+    public void shouldTransformDynamicContent() {
+        String dynamicContent = "<body><p>Embedded Dynamic Content</p>" +
+                "<p><a type=\"DynamicContent\" dtxInsert=\"Interactive Graphic Link\" href=\"/FT/Content/World%20News/Stories/WebPublished/test%20ig%20story.xml?uuid=d02886fc-58ff-11e8-9859-6668838a4c10\">Interactive Graphic</a>" +
+                "</p></body>";
+        String processedDynamicContent = "<body><p>Embedded Dynamic Content</p>" +
+                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" url=\"http://test.api.ft.com/content/d02886fc-58ff-11e8-9859-6668838a4c10\"></ft-content></body>";
+
+        checkTransformation(dynamicContent, processedDynamicContent, Maps.immutableEntry("apiHost", "test.api.ft.com"));
+    }
+
+    @Test
+    public void shouldExtractDynamicContentFromParagraphs() {
+        String dynamicContent = "<body><p>Embedded Dynamic Content</p><p>" +
+                "<a type=\"DynamicContent\" dtxInsert=\"Interactive Graphic Link\" href=\"/FT/Content/World%20News/Stories/WebPublished/test%20ig%20story.xml?uuid=d02886fc-58ff-11e8-9859-6668838a4c10\">Interactive Graphic</a>" +
+                "<a type=\"DynamicContent\" dtxInsert=\"Interactive Graphic Link\" href=\"/FT/Content/World%20News/Stories/WebPublished/test%20ig%20story.xml?uuid=f1655aa4-6320-11e8-a39d-4df188287fff\">Interactive Graphic</a>" +
+                "</p></body>";
+        String processedDynamicContent = "<body><p>Embedded Dynamic Content</p>" +
+                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" url=\"http://test.api.ft.com/content/d02886fc-58ff-11e8-9859-6668838a4c10\"></ft-content>" +
+                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" url=\"http://test.api.ft.com/content/f1655aa4-6320-11e8-a39d-4df188287fff\"></ft-content>" +
+                "</body>";
+
+        checkTransformation(dynamicContent, processedDynamicContent, Maps.immutableEntry("apiHost", "test.api.ft.com"));
+    }
+
+    @Test
+    public void shouldNotWriteDynamicContentWithMissingHref() {
+        String dynamicContent = "<body><p>Embedded Dynamic Content</p><p>" +
+                "<a type=\"DynamicContent\" dtxInsert=\"Interactive Graphic Link\">Interactive Graphic</a></p></body>";
+        String processedDynamicContent = "<body><p>Embedded Dynamic Content</p></body>";
+
+        checkTransformation(dynamicContent, processedDynamicContent, Maps.immutableEntry("apiHost", "test.api.ft.com"));
+    }
+
+    @Test
+    public void shouldNotWriteDynamicContentIfHrefIsMissingQueryParams() {
+        String dynamicContent = "<body><p>Embedded Dynamic Content</p><p>" +
+                "<a type=\"DynamicContent\" dtxInsert=\"Interactive Graphic Link\" href=\"/FT/Content/World%20News/Stories/WebPublished/test%20ig%20story.xml\">Interactive Graphic</a>" +
+                "</p></body>";
+        String processedDynamicContent = "<body><p>Embedded Dynamic Content</p></body>";
+
+        checkTransformation(dynamicContent, processedDynamicContent, Maps.immutableEntry("apiHost", "test.api.ft.com"));
+    }
+
     private void checkTransformation(String originalBody, String expectedTransformedBody, Map.Entry<String, Object>... contextData) {
         String actualTransformedBody = bodyTransformer.transform(originalBody, TRANSACTION_ID, contextData);
 

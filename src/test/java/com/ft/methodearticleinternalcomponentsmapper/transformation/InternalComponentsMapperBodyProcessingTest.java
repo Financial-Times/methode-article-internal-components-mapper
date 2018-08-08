@@ -14,9 +14,11 @@ import com.ft.methodearticleinternalcomponentsmapper.model.Topper;
 import com.ft.methodearticleinternalcomponentsmapper.validation.MethodeArticleValidator;
 import com.ft.methodearticleinternalcomponentsmapper.validation.PublishingStatus;
 import com.ft.uuidutils.DeriveUUID;
+
 import com.google.common.collect.Maps;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -136,7 +138,7 @@ public class InternalComponentsMapperBodyProcessingTest {
 
         InternalComponents content = eomFileProcessor.map(eomFile, TRANSACTION_ID, LAST_MODIFIED, false);
 
-        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
+        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())), eq(Maps.immutableEntry("apiHost", API_HOST)));
         assertThat(content.getBodyXML(), equalTo(expectedContent.getBodyXML()));
     }
 
@@ -154,7 +156,8 @@ public class InternalComponentsMapperBodyProcessingTest {
 
         InternalComponents content = eomFileProcessor.map(eomFile, TRANSACTION_ID, LAST_MODIFIED, false);
 
-        verify(bodyTransformer, times(2)).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
+        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())), eq(Maps.immutableEntry("apiHost", API_HOST)));
+        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
         assertThat(content.getBodyXML(), equalTo(expectedContent.getBodyXML()));
         assertThat(content.getSummary().getBodyXML(), equalTo(expectedContent.getSummary().getBodyXML()));
     }
@@ -208,7 +211,7 @@ public class InternalComponentsMapperBodyProcessingTest {
 
         InternalComponents content = eomFileProcessor.map(eomFile, TRANSACTION_ID, LAST_MODIFIED, false);
 
-        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
+        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())), eq(Maps.immutableEntry("apiHost", API_HOST)));
         assertThat(content.getBodyXML(), equalTo(expectedContent.getBodyXML()));
     }
 
