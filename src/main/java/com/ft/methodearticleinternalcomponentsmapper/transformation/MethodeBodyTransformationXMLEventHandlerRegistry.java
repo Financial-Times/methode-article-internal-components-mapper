@@ -30,7 +30,7 @@ public class MethodeBodyTransformationXMLEventHandlerRegistry extends XMLEventHa
         registerEntityReferenceEventHandler(new PlainTextHtmlEntityReferenceEventHandler());
 
         // want to be sure to keep the wrapping node
-        registerStartAndEndElementEventHandler(new RetainXMLEventHandler(), "body", "concept");
+        registerStartAndEndElementEventHandler(new RetainXMLEventHandler(), "body", "ft-concept");
 
         //rich content
         InlineImageXmlEventHandler inlineImageXmlEventHandler = new InlineImageXmlEventHandler();

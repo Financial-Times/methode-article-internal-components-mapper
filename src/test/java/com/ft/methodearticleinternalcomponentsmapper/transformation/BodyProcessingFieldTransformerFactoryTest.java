@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -59,21 +58,6 @@ public class BodyProcessingFieldTransformerFactoryTest {
             "http://interactive.ftdata.co.uk/features/2013-04-11_renminbiUpdate/index.html"
     );
 
-    private static final Map<String, String> contentTypeTemplates;
-
-    static {
-        contentTypeTemplates = new HashMap<>();
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Article", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/ImageSet", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/MediaResource", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Video", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/company/PublicCompany", "/organisations/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/ContentPackage", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Content", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Image", "/content/{{id}}");
-    }
-
-    private static final String apiHost = "api.ft.com";
     private static final String CANONICAL_URL_TEMPLATE = "https://www.ft.com/content/%s";
     private static final String TRANSACTION_ID = "tid_test";
 
@@ -99,7 +83,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
 
     @Before
     @SuppressWarnings("unchecked")
-    public void setup() throws Exception {
+    public void setup() {
         exampleVimeoVideo = new Video();
         exampleVimeoVideo.setUrl("https://www.vimeo.com/77761436");
         exampleVimeoVideo.setEmbedded(true);
@@ -109,7 +93,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
         exampleYouTubeVideo.setEmbedded(true);
 
         bodyTransformer = new BodyProcessingFieldTransformerFactory(documentStoreApiClient, videoMatcher,
-                interactiveGraphicsMatcher, contentTypeTemplates, apiHost, concordanceApiClient, CANONICAL_URL_TEMPLATE).newInstance();
+                interactiveGraphicsMatcher, concordanceApiClient, CANONICAL_URL_TEMPLATE).newInstance();
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(Collections.emptyList());
         when(concordanceApiClient.getConcordancesByIdentifierValues(anyList())).thenReturn(new Concordances(Collections.emptyList()));
     }
@@ -416,7 +400,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
         String processedPromoBox = "<body><promo-box><promo-title><p>" +
                 "<a href=\"http://www.ft.com/reports/ft-500-2011\" title=\"www.ft.com\">FT 500</a></p></promo-title>" +
                 "<promo-headline><p>Headline</p></promo-headline><promo-image>" +
-                "<ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
+                "<ft-content data-embedded=\"true\" id=\"432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
                 "<promo-intro><p>The risers and fallers in our annual list of the world’s biggest companies</p></promo-intro><promo-link>" +
                 "<p><a href=\"http://www.ft.com/cms/s/0/0bdf4bb6-6676-11e4-8bf6-00144feabdc0.html\"></a></p></promo-link></promo-box>" +
                 "<p>This is the beginning of a sentence.This is the end of the sentence.</p></body>";
@@ -449,7 +433,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
 
         String processedPromoBox = "<body><promo-box>" +
                 "<promo-headline><p>Labour attacks ministerial role of former HSBC chairman</p></promo-headline><promo-image>" +
-                "<ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/17ee1f24-ff46-11e2-055d-97bbf262bf2b\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
+                "<ft-content data-embedded=\"true\" id=\"17ee1f24-ff46-11e2-055d-97bbf262bf2b\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
                 "<promo-intro><p>The revelations about HSBC’s Swiss operations reverberated around Westminster on bold <strong>Monday</strong>, with Labour claiming the coalition was alerted in 2010 to strikeout malpractice at the bank and took no action.</p>\n" +
                 "<p><a href=\"https://www.ft.com/content/2f9b640c-b056-11e4-a2cc-00144feab7de\">Continue reading</a></p></promo-intro>" +
                 "</promo-box><p>This is the beginning of a sentence.This is the end of the sentence.</p></body>";
@@ -471,7 +455,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
         String processedPromoBox = "<body><promo-box><promo-title><p>" +
                 "<a href=\"http://www.ft.com/reports/ft-500-2011\" title=\"www.ft.com\">FT 500</a></p></promo-title>" +
                 "<promo-headline><p>Headline</p></promo-headline><promo-image>" +
-                "<ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
+                "<ft-content data-embedded=\"true\" id=\"432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
                 "<promo-intro><p>The risers and fallers in our <strong>annual</strong> list of the world’s biggest companies</p></promo-intro><promo-link>" +
                 "<p><a href=\"http://www.ft.com/cms/s/0/0bdf4bb6-6676-11e4-8bf6-00144feabdc0.html\"></a></p></promo-link></promo-box>" +
                 "<p>This is the beginning of a sentence.This is the end of the sentence.</p></body>";
@@ -507,7 +491,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
 
         String processedPromoBox = "<body><promo-box>" +
                 "<promo-headline><p>Headline</p></promo-headline><promo-image>" +
-                "<ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
+                "<ft-content data-embedded=\"true\" id=\"432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
                 "<promo-intro><p>The risers and fallers in our annual list of the world’s biggest companies</p></promo-intro><promo-link>" +
                 "<p><a href=\"http://www.ft.com/cms/s/0/0bdf4bb6-6676-11e4-8bf6-00144feabdc0.html\"></a></p></promo-link></promo-box>" +
                 "<p>This is the beginning of a sentence.This is the end of the sentence.</p></body>";
@@ -527,7 +511,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
 
         String processedPromoBox = "<body><promo-box>" +
                 "<promo-headline><p>Headline</p></promo-headline><promo-image>" +
-                "<ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
+                "<ft-content data-embedded=\"true\" id=\"432b5632-9e79-11e0-0a0f-978e959e1689\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></promo-image>" +
                 "<promo-intro><p>The risers and fallers in our annual list of the world’s biggest companies</p></promo-intro><promo-link>" +
                 "<p><a href=\"http://www.ft.com/cms/s/0/0bdf4bb6-6676-11e4-8bf6-00144feabdc0.html\"></a></p></promo-link></promo-box>" +
                 "<p>This is the beginning of a sentence.This is the end of the sentence.</p></body>";
@@ -1446,7 +1430,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "<timeline-credits>AFP, Bloomberg, Shawn Curry, Company handouts</timeline-credits>\n" +
                 "<timeline-sources>FT Research</timeline-sources>\n" +
                 "<timeline-byline>Tom Burgis, Callum Locke, Katie Carnie, Steve Bernard</timeline-byline>\n" +
-                "<timeline-item>\n<timeline-image><ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/213bb10c-71fe-11e2-1f62-97bbf262bf2b\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></timeline-image>\n" +
+                "<timeline-item>\n<timeline-image><ft-content data-embedded=\"true\" id=\"213bb10c-71fe-11e2-1f62-97bbf262bf2b\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></timeline-image>\n" +
                 "<timeline-date>1997-01-01 00:00:00</timeline-date>\n" +
                 "<timeline-title>1997</timeline-title>\n" +
                 "<timeline-body><p>Rio Tinto is granted rights to explore the Simandou deposit</p>\n</timeline-body>\n</timeline-item>" +
@@ -1474,7 +1458,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "<timeline-credits>AFP, Bloomberg, Shawn Curry, Company handouts</timeline-credits>\n" +
                 "<timeline-sources>FT Research</timeline-sources>\n" +
                 "<timeline-byline>Tom Burgis, Callum Locke, Katie Carnie, Steve Bernard</timeline-byline>\n" +
-                "<timeline-item>\n<timeline-image><ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/213bb10c-71fe-11e2-1f62-97bbf262bf2b\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></timeline-image>\n" +
+                "<timeline-item>\n<timeline-image><ft-content data-embedded=\"true\" id=\"213bb10c-71fe-11e2-1f62-97bbf262bf2b\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content></timeline-image>\n" +
                 "<timeline-date>1997-01-01 00:00:00</timeline-date>\n" +
                 "<timeline-title>1997</timeline-title>\n" +
                 "<timeline-body><p>Rio Tinto is granted rights to explore the Simandou deposit</p>\n</timeline-body>\n</timeline-item>" +
@@ -1511,7 +1495,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "<web-inline-picture id=\"U2113113643377jlC\" width=\"150\" fileref=\"/FT/Graphics/Online/Z_Undefined/FT-video-story.jpg?uuid=91b39ae8-ccff-11e1-92c1-00144feabdc0\" tmx=\"150 100 150 100\"/>\n" +
                 "</videoPlayer>" +
                 "</body>";
-        String processedVideoText = "<body><ft-content url=\"http://api.ft.com/content/28533356-911a-3352-a3cf-06f688157c58\" data-embedded=\"true\" type=\"http://www.ft.com/ontology/content/Video\"></ft-content></body>";
+        String processedVideoText = "<body><ft-content id=\"28533356-911a-3352-a3cf-06f688157c58\" data-embedded=\"true\" type=\"http://www.ft.com/ontology/content/Video\"></ft-content></body>";
         checkTransformation(videoTextfromMethode, processedVideoText);
     }
 
@@ -1748,7 +1732,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed feugiat turpis at massa tristique sagittis. </p>" +
                 "</layout-slot></layout></body>";
         String transformedContent = "<body><div class=\"layout\"><div class=\"layout-slot\" data-slot-width=\"tbd\">" +
-                "<ft-content data-embedded=\"true\" url=\"http://api.ft.com/content/8924d91e-39fd-11e5-25b7-24e11a1bf245\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content>" +
+                "<ft-content data-embedded=\"true\" id=\"8924d91e-39fd-11e5-25b7-24e11a1bf245\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content>" +
                 "</div><div class=\"layout-slot\">" +
                 "<h3>Header text</h3>" +
                 "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed feugiat turpis at massa tristique sagittis. </p>" +
@@ -1782,7 +1766,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
     }
 
     @Test
-    public void shouldUseArticleUuidAndImageSetId() throws Exception {
+    public void shouldUseArticleUuidAndImageSetId() {
         final String bodyWithImageSets = readFromFile("body/embedded_image_set_body.xml");
         final String articleUuid = UUID.randomUUID().toString();
 
@@ -1848,7 +1832,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 .thenReturn(Collections.singletonList(new Content(KITCHEN_SINK_ASSET5_UUID, "Article")));
 
         String originalRecommendedContent = "<body><recommended><ul><li><a href=\"/FT/Content/Companies/Stories/Live/GB/New%20UUID%20Generation%20for%20image-sets/rj/Article01%20without%20imageset.xml?uuid=" + KITCHEN_SINK_ASSET5_UUID + "\">Internal articles’s title added by methode automatically</a></li></ul></recommended></body>";
-        String transformedContent = "<body><recommended><recommended-title/><ul><li><ft-content type=\"http://www.ft.com/ontology/content/Article\" url=\"http://api.ft.com/content/" + KITCHEN_SINK_ASSET5_UUID + "\">Internal articles’s title added by methode automatically</ft-content></li></ul></recommended></body>";
+        String transformedContent = "<body><recommended><recommended-title/><ul><li><ft-content type=\"http://www.ft.com/ontology/content/Article\" id=\"" + KITCHEN_SINK_ASSET5_UUID + "\">Internal articles’s title added by methode automatically</ft-content></li></ul></recommended></body>";
         checkTransformation(originalRecommendedContent, transformedContent);
     }
 
@@ -1859,7 +1843,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 .thenReturn(Collections.singletonList(new Content(KITCHEN_SINK_ASSET5_UUID, "Article")));
 
         String originalRecommendedContent = "<body><recommended><ul><li><a href=\"http://www.ft.com/content/" + KITCHEN_SINK_ASSET5_UUID + "\">Manually added FT article’s manual title</a></li></ul></recommended></body>";
-        String transformedContent = "<body><recommended><recommended-title/><ul><li><ft-content type=\"http://www.ft.com/ontology/content/Article\" url=\"http://api.ft.com/content/" + KITCHEN_SINK_ASSET5_UUID + "\">Manually added FT article’s manual title</ft-content></li></ul></recommended></body>";
+        String transformedContent = "<body><recommended><recommended-title/><ul><li><ft-content type=\"http://www.ft.com/ontology/content/Article\" id=\"" + KITCHEN_SINK_ASSET5_UUID + "\">Manually added FT article’s manual title</ft-content></li></ul></recommended></body>";
         checkTransformation(originalRecommendedContent, transformedContent);
     }
 
@@ -2008,11 +1992,10 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "</body>";
 
         String transformedContent = "<body>" +
-                "<ft-content data-embedded=\"true\" type=\"http://www.ft.com/ontology/content/ImageSet\" url=\"http://" + apiHost + "/content/" + generatedUuid + "\"></ft-content>" +
-                "<ft-content type=\"http://www.ft.com/ontology/content/ImageSet\" url=\"http://" + apiHost + "/content/" + inlineImageUuid + "\" data-embedded=\"true\"></ft-content>" +
+                "<ft-content data-embedded=\"true\" id=\"" + generatedUuid + "\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content>" +
+                "<ft-content data-embedded=\"true\" id=\"" + inlineImageUuid + "\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content>" +
                 "<img src=\"img1\"/>" +
-                "<img src=\"img2\"/>" +
-                "<p>Lorem ipsum</p>" +
+                "<img src=\"img2\"/><p>Lorem ipsum</p>" +
                 "<img src=\"img3\"/>" +
                 "<img src=\"img4\"/>" +
                 "<img src=\"img5\"/>" +
@@ -2041,7 +2024,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "<promo-box>" +
                 "<promo-title><p>In depth</p></promo-title>" +
                 "<promo-headline><p><a href=\"http://www.ft.com/intl/indepth/climatechange\" title=\"Climate change in depth - FT.com\">Climate change</a></p></promo-headline>" +
-                "<promo-image><ft-content type=\"http://www.ft.com/ontology/content/ImageSet\" url=\"http://" + apiHost + "/content/5e542eaa-f042-11e0-08b4-978e959e1fd3\" data-embedded=\"true\"></ft-content></promo-image>" +
+                "<promo-image><ft-content type=\"http://www.ft.com/ontology/content/ImageSet\" id=\"5e542eaa-f042-11e0-08b4-978e959e1fd3\" data-embedded=\"true\"></ft-content></promo-image>" +
                 "<promo-intro><p>The latest news and analysis on the world’s changing climate and the political moves afoot to tackle the problem</p></promo-intro>" +
                 "</promo-box>" +
                 "<p><strong>Who wins and who loses?</strong></p>" +
@@ -2192,7 +2175,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "<p><a type=\"DynamicContent\" dtxInsert=\"Interactive Graphic Link\" href=\"/FT/Content/World%20News/Stories/WebPublished/test%20ig%20story.xml?uuid=d02886fc-58ff-11e8-9859-6668838a4c10\">Interactive Graphic</a>" +
                 "</p></body>";
         String processedDynamicContent = "<body><p>Embedded Dynamic Content</p>" +
-                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" url=\"http://test.api.ft.com/content/d02886fc-58ff-11e8-9859-6668838a4c10\"></ft-content></body>";
+                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" id=\"d02886fc-58ff-11e8-9859-6668838a4c10\"></ft-content></body>";
 
         checkTransformation(dynamicContent, processedDynamicContent, Maps.immutableEntry("apiHost", "test.api.ft.com"));
     }
@@ -2204,8 +2187,8 @@ public class BodyProcessingFieldTransformerFactoryTest {
                 "<a type=\"DynamicContent\" dtxInsert=\"Interactive Graphic Link\" href=\"/FT/Content/World%20News/Stories/WebPublished/test%20ig%20story.xml?uuid=f1655aa4-6320-11e8-a39d-4df188287fff\">Interactive Graphic</a>" +
                 "</p></body>";
         String processedDynamicContent = "<body><p>Embedded Dynamic Content</p>" +
-                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" url=\"http://test.api.ft.com/content/d02886fc-58ff-11e8-9859-6668838a4c10\"></ft-content>" +
-                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" url=\"http://test.api.ft.com/content/f1655aa4-6320-11e8-a39d-4df188287fff\"></ft-content>" +
+                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" id=\"d02886fc-58ff-11e8-9859-6668838a4c10\"></ft-content>" +
+                "<ft-content type=\"http://www.ft.com/ontology/content/DynamicContent\" data-embedded=\"true\" id=\"f1655aa4-6320-11e8-a39d-4df188287fff\"></ft-content>" +
                 "</body>";
 
         checkTransformation(dynamicContent, processedDynamicContent, Maps.immutableEntry("apiHost", "test.api.ft.com"));

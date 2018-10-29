@@ -23,6 +23,5 @@ CMD exec java $JAVA_OPTS \
      -Ddw.concordanceApi.endpointConfiguration.primaryNodes=$CONCORDANCE_API_URL \
      -Ddw.consumer.messageConsumer.queueProxyHost=http://$KAFKA_PROXY_URL \
      -Ddw.producer.messageProducer.proxyHostAndPort=$KAFKA_PROXY_URL \
-     -Ddw.apiHost=$API_HOST \
      -Ddw.logging.appenders[0].logFormat="%-5p [%d{ISO8601, GMT}] %c: %X{transaction_id} %replace(%m%n[%thread]%xEx){'\n', '|'}%nopex%n" \
      -jar methode-article-internal-components-mapper.jar server config.yaml

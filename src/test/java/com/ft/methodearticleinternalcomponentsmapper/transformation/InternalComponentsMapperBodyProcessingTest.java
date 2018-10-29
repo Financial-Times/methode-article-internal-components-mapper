@@ -77,7 +77,6 @@ public class InternalComponentsMapperBodyProcessingTest {
     private static final String TRANSFORMED_BODY = "<body><p>some other random text</p></body>";
     private static final String EMPTY_BODY = "<body></body>";
 
-    private static final String API_HOST = "test.api.ft.com";
     private static final String TRANSACTION_ID = "tid_test";
     private static final Date LAST_MODIFIED = new Date();
     private static final UUID uuid = UUID.randomUUID();
@@ -96,7 +95,7 @@ public class InternalComponentsMapperBodyProcessingTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         bodyTransformer = mock(FieldTransformer.class);
         when(bodyTransformer.transform(anyString(), anyString(), anyVararg())).thenReturn(TRANSFORMED_BODY);
 
@@ -125,7 +124,7 @@ public class InternalComponentsMapperBodyProcessingTest {
         articleValidators.put(InternalComponentsMapper.SourceCode.FT, methodeArticleValidator);
         articleValidators.put(InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER, methodeContentPlaceholderValidator);
 
-        eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators, API_HOST);
+        eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators);
     }
 
     @Test
@@ -138,7 +137,7 @@ public class InternalComponentsMapperBodyProcessingTest {
 
         InternalComponents content = eomFileProcessor.map(eomFile, TRANSACTION_ID, LAST_MODIFIED, false);
 
-        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())), eq(Maps.immutableEntry("apiHost", API_HOST)));
+        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
         assertThat(content.getBodyXML(), equalTo(expectedContent.getBodyXML()));
     }
 
@@ -156,8 +155,7 @@ public class InternalComponentsMapperBodyProcessingTest {
 
         InternalComponents content = eomFileProcessor.map(eomFile, TRANSACTION_ID, LAST_MODIFIED, false);
 
-        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())), eq(Maps.immutableEntry("apiHost", API_HOST)));
-        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
+        verify(bodyTransformer, times(2)).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
         assertThat(content.getBodyXML(), equalTo(expectedContent.getBodyXML()));
         assertThat(content.getSummary().getBodyXML(), equalTo(expectedContent.getSummary().getBodyXML()));
     }
@@ -181,7 +179,7 @@ public class InternalComponentsMapperBodyProcessingTest {
         articleValidators.put(InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER, methodeContentPlaceholderValidator);
         BodyProcessor htmlFieldProcessor = spy(new Html5SelfClosingTagBodyProcessor());
 
-        InternalComponentsMapper eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators, API_HOST);
+        InternalComponentsMapper eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators);
 
         final InternalComponents expectedContent = InternalComponents.builder()
                 .withValuesFrom(standardExpectedContent)
@@ -211,7 +209,7 @@ public class InternalComponentsMapperBodyProcessingTest {
 
         InternalComponents content = eomFileProcessor.map(eomFile, TRANSACTION_ID, LAST_MODIFIED, false);
 
-        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())), eq(Maps.immutableEntry("apiHost", API_HOST)));
+        verify(bodyTransformer).transform(anyString(), eq(TRANSACTION_ID), eq(Maps.immutableEntry("uuid", eomFile.getUuid())));
         assertThat(content.getBodyXML(), equalTo(expectedContent.getBodyXML()));
     }
 
@@ -304,8 +302,8 @@ public class InternalComponentsMapperBodyProcessingTest {
     }
 
     @Test
-    public void testMainImageReferenceIsPutInBodyWhenPresentAndPrimarySizeFlag() throws Exception {
-        String expectedTransformedBody = "<body><ft-content data-embedded=\"true\" type=\"http://www.ft.com/ontology/content/ImageSet\" url=\"http://test.api.ft.com/content/%s\"></ft-content>" +
+    public void testMainImageReferenceIsPutInBodyWhenPresentAndPrimarySizeFlag() {
+        String expectedTransformedBody = "<body><ft-content data-embedded=\"true\" id=\"%s\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content>" +
                 "                <p>random text for now</p>" +
                 "            </body>";
         testMainImageReferenceIsPutInBodyWithMetadataFlag("Primary size",
@@ -313,8 +311,8 @@ public class InternalComponentsMapperBodyProcessingTest {
     }
 
     @Test
-    public void testMainImageReferenceIsPutInBodyWhenPresentAndArticleSizeFlag() throws Exception {
-        String expectedTransformedBody = "<body><ft-content data-embedded=\"true\" type=\"http://www.ft.com/ontology/content/ImageSet\" url=\"http://test.api.ft.com/content/%s\"></ft-content>" +
+    public void testMainImageReferenceIsPutInBodyWhenPresentAndArticleSizeFlag() {
+        String expectedTransformedBody = "<body><ft-content data-embedded=\"true\" id=\"%s\" type=\"http://www.ft.com/ontology/content/ImageSet\"></ft-content>" +
                 "                <p>random text for now</p>" +
                 "            </body>";
         testMainImageReferenceIsPutInBodyWithMetadataFlag("Article size",
@@ -322,7 +320,7 @@ public class InternalComponentsMapperBodyProcessingTest {
     }
 
     @Test
-    public void testMainImageReferenceIsNotPutInBodyWhenPresentButNoPictureFlag() throws Exception {
+    public void testMainImageReferenceIsNotPutInBodyWhenPresentButNoPictureFlag() {
         String expectedTransformedBody = "<body>" +
                 "                <p>random text for now</p>" +
                 "            </body>";
@@ -330,7 +328,7 @@ public class InternalComponentsMapperBodyProcessingTest {
     }
 
     @Test
-    public void testMainImageReferenceIsNotPutInBodyWhenMissing() throws Exception {
+    public void testMainImageReferenceIsNotPutInBodyWhenMissing() {
         when(bodyTransformer.transform(anyString(), anyString(), anyVararg())).then(returnsFirstArg());
         final EomFile eomFile = createStandardEomFile(uuid, EOM_COMPOUND_STORY, valuePlaceholdersValues, systemAttributesPlaceholdersValues, attributesPlaceholdersValues);
 
@@ -343,7 +341,7 @@ public class InternalComponentsMapperBodyProcessingTest {
     }
 
     @Test(expected = InvalidMethodeContentException.class)
-    public void thatTransformationFailsIfThereIsNoBody() throws Exception {
+    public void thatTransformationFailsIfThereIsNoBody() {
         String value = FileUtils.readFile("article/article_value_with_no_body.xml");
         final EomFile eomFile = new EomFile.Builder()
                 .withValuesFrom(standardEomFile)
@@ -358,7 +356,7 @@ public class InternalComponentsMapperBodyProcessingTest {
         String expectedUUID = UUID.nameUUIDFromBytes(IMAGE_SET_UUID.getBytes(UTF_8)).toString();
         String expectedBody = "<body>"
                 + "<p>random text for now</p>"
-                + "<ft-content type=\"http://www.ft.com/ontology/content/ImageSet\" url=\"http://test.api.ft.com/content/" + expectedUUID + "\" data-embedded=\"true\"></ft-content>"
+                + "<ft-content type=\"http://www.ft.com/ontology/content/ImageSet\" id=\"" + expectedUUID + "\" data-embedded=\"true\"></ft-content>"
                 + "</body>";
         when(bodyTransformer.transform(anyString(), anyString(), anyVararg())).thenReturn(expectedBody);
 
@@ -374,7 +372,7 @@ public class InternalComponentsMapperBodyProcessingTest {
         String expectedUUID = UUID.nameUUIDFromBytes(IMAGE_SET_UUID.getBytes(UTF_8)).toString();
         String expectedBody = "<body>"
                 + "<p>random text for now</p>"
-                + "<ft-content type=\"http://www.ft.com/ontology/content/ImageSet\" url=\"http://test.api.ft.com/content/" + expectedUUID + "\" data-embedded=\"true\"></ft-content>"
+                + "<ft-content type=\"http://www.ft.com/ontology/content/ImageSet\" id=\"" + expectedUUID + "\" data-embedded=\"true\"></ft-content>"
                 + "</body>";
         when(bodyTransformer.transform(anyString(), anyString(), anyVararg())).thenReturn(expectedBody);
 

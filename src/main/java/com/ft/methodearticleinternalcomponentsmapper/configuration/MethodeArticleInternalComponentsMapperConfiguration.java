@@ -1,17 +1,18 @@
 package com.ft.methodearticleinternalcomponentsmapper.configuration;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ft.bodyprocessing.richcontent.VideoSiteConfiguration;
 import com.ft.platform.dropwizard.AppInfo;
 import com.ft.platform.dropwizard.ConfigWithAppInfo;
 import com.ft.platform.dropwizard.ConfigWithGTG;
 import com.ft.platform.dropwizard.GTGConfig;
 
-import io.dropwizard.Configuration;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
+
+import io.dropwizard.Configuration;
 
 public class MethodeArticleInternalComponentsMapperConfiguration extends Configuration implements ConfigWithAppInfo, ConfigWithGTG {
 
@@ -25,9 +26,11 @@ public class MethodeArticleInternalComponentsMapperConfiguration extends Configu
     private final List<VideoSiteConfiguration> videoSiteConfig;
     private final List<String> interactiveGraphicsWhiteList;
     private final String contentUriPrefix;
-    private final Map<String, String> contentTypeTemplates;
-    private final String apiHost;
     private final String canonicalUrlTemplate;
+    @JsonProperty
+    private final GTGConfig gtgConfig = new GTGConfig();
+    @JsonProperty
+    private AppInfo appInfo = new AppInfo();
 
     public MethodeArticleInternalComponentsMapperConfiguration(@JsonProperty("consumer") ConsumerConfiguration consumerConfiguration,
                                                                @JsonProperty("producer") ProducerConfiguration producerConfiguration,
@@ -39,8 +42,6 @@ public class MethodeArticleInternalComponentsMapperConfiguration extends Configu
                                                                @JsonProperty("methodeContentPlaceholderMapper") UppServiceConfiguration methodeContentPlaceholderMapperConfiguration,
                                                                @JsonProperty("validationConfiguration") ValidationConfiguration validationConfiguration,
                                                                @JsonProperty("contentUriPrefix") String contentUriPrefix,
-                                                               @JsonProperty("contentTypeTemplates") Map<String, String> contentTypeTemplates,
-                                                               @JsonProperty("apiHost") String apiHost,
                                                                @JsonProperty("canonicalUrlTemplate") String canonicalUrlTemplate) {
         this.consumerConfiguration = consumerConfiguration;
         this.producerConfiguration = producerConfiguration;
@@ -52,16 +53,8 @@ public class MethodeArticleInternalComponentsMapperConfiguration extends Configu
         this.methodeContentPlaceholderMapperConfiguration = methodeContentPlaceholderMapperConfiguration;
         this.validationConfiguration = validationConfiguration;
         this.contentUriPrefix = contentUriPrefix;
-        this.contentTypeTemplates = contentTypeTemplates;
-        this.apiHost = apiHost;
         this.canonicalUrlTemplate = canonicalUrlTemplate;
     }
-
-    @JsonProperty
-    private AppInfo appInfo = new AppInfo();
-    
-    @JsonProperty
-    private final GTGConfig gtgConfig= new GTGConfig();
 
     @NotNull
     public ConsumerConfiguration getConsumerConfiguration() {
@@ -113,16 +106,6 @@ public class MethodeArticleInternalComponentsMapperConfiguration extends Configu
         return validationConfiguration;
     }
 
-    @NotNull
-    public Map<String, String> getContentTypeTemplates() {
-        return contentTypeTemplates;
-    }
-
-    @NotNull
-    public String getApiHost() {
-        return apiHost;
-    }
-
     public String getCanonicalUrlTemplate() {
         return canonicalUrlTemplate;
     }
@@ -132,8 +115,8 @@ public class MethodeArticleInternalComponentsMapperConfiguration extends Configu
         return appInfo;
     }
 
-	@Override
-	public GTGConfig getGtg() {
-		return gtgConfig;
-	}
+    @Override
+    public GTGConfig getGtg() {
+        return gtgConfig;
+    }
 }

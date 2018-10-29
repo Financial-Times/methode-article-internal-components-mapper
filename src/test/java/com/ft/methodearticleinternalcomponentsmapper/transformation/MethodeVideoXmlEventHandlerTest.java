@@ -3,33 +3,24 @@ package com.ft.methodearticleinternalcomponentsmapper.transformation;
 import com.ft.bodyprocessing.BodyProcessingContext;
 import com.ft.bodyprocessing.writer.BodyWriter;
 import com.ft.bodyprocessing.xml.eventhandlers.XMLEventHandler;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.events.StartElement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.events.StartElement;
 
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MethodeVideoXmlEventHandlerTest extends BaseXMLEventHandlerTest {
-
-    private MethodeVideoXmlEventHandler eventHandler;
-    @Mock
-    private XMLEventHandler fallbackHandler;
-
-    @Mock
-    private XMLEventReader mockXmlEventReader;
-    @Mock
-    private BodyWriter mockBodyWriter;
-    @Mock
-    private BodyProcessingContext mockBodyProcessingContext;
 
     private static final String VIDEO_PLAYER_ELEMENT = "videoPlayer";
     private static final String VIDEO_ID_ATTRIBUTE_NAME = "videoID";
@@ -37,12 +28,22 @@ public class MethodeVideoXmlEventHandlerTest extends BaseXMLEventHandlerTest {
     private static final String VIDEO_UUID = "e21e5235-5f3f-4a53-bafd-73dbcd0552e0";
     private static final String DATA_EMBEDDED = "data-embedded";
     private static final String VIDEO_TYPE = "http://www.ft.com/ontology/content/Video";
-    private static final String CONTENT_TAG = "content";
+    private static final String FT_CONTENT_TAG = "ft-content";
     private static final String ID = "id";
     private static final String TYPE = "type";
 
+    private MethodeVideoXmlEventHandler eventHandler;
+    @Mock
+    private XMLEventHandler fallbackHandler;
+    @Mock
+    private XMLEventReader mockXmlEventReader;
+    @Mock
+    private BodyWriter mockBodyWriter;
+    @Mock
+    private BodyProcessingContext mockBodyProcessingContext;
+
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         eventHandler = new MethodeVideoXmlEventHandler(VIDEO_ID_ATTRIBUTE_NAME, fallbackHandler);
     }
 
@@ -70,8 +71,8 @@ public class MethodeVideoXmlEventHandlerTest extends BaseXMLEventHandlerTest {
         StartElement startElement = getStartElementWithAttributes(VIDEO_PLAYER_ELEMENT,
                 buildOneAttributeMap(VIDEO_ID_ATTRIBUTE_NAME, VIDEO_ID));
         eventHandler.handleStartElementEvent(startElement, mockXmlEventReader, mockBodyWriter, mockBodyProcessingContext);
-        verify(mockBodyWriter).writeStartTag(CONTENT_TAG, transformedAttributes);
-        verify(mockBodyWriter).writeEndTag(CONTENT_TAG);
+        verify(mockBodyWriter).writeStartTag(FT_CONTENT_TAG, transformedAttributes);
+        verify(mockBodyWriter).writeEndTag(FT_CONTENT_TAG);
     }
 
     @Test
@@ -83,8 +84,8 @@ public class MethodeVideoXmlEventHandlerTest extends BaseXMLEventHandlerTest {
         StartElement startElement = getStartElementWithAttributes(VIDEO_PLAYER_ELEMENT,
                 buildOneAttributeMap(VIDEO_ID_ATTRIBUTE_NAME, VIDEO_UUID));
         eventHandler.handleStartElementEvent(startElement, mockXmlEventReader, mockBodyWriter, mockBodyProcessingContext);
-        verify(mockBodyWriter).writeStartTag(CONTENT_TAG, transformedAttributes);
-        verify(mockBodyWriter).writeEndTag(CONTENT_TAG);
+        verify(mockBodyWriter).writeStartTag(FT_CONTENT_TAG, transformedAttributes);
+        verify(mockBodyWriter).writeEndTag(FT_CONTENT_TAG);
     }
 
     private Map<String, String> buildOneAttributeMap(String attributeName, String attributeValue) {

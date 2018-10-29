@@ -14,7 +14,7 @@ import java.util.Map;
 
 public abstract class AbstractVideoXmlEventHandler extends BaseXMLEventHandler {
 
-    private static final String CONTENT_TAG = "content";
+    private static final String FT_CONTENT_TAG = "ft-content";
     private static final String DATA_EMBEDDED = "data-embedded";
     private static final String ID = "id";
     private static final String TYPE = "type";
@@ -39,8 +39,8 @@ public abstract class AbstractVideoXmlEventHandler extends BaseXMLEventHandler {
         attributesToAdd.put(DATA_EMBEDDED, Boolean.TRUE.toString());
         attributesToAdd.put(TYPE, VIDEO_TYPE);
         skipUntilMatchingEndTag(event.getName().toString(), xmlEventReader);
-        eventWriter.writeStartTag(CONTENT_TAG, attributesToAdd);
-        eventWriter.writeEndTag(CONTENT_TAG);
+        eventWriter.writeStartTag(FT_CONTENT_TAG, attributesToAdd);
+        eventWriter.writeEndTag(FT_CONTENT_TAG);
     }
 
     public abstract String extractVideoId(StartElement event);

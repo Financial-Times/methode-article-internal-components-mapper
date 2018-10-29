@@ -69,7 +69,6 @@ public class InternalComponentsMapperTest {
     private static final String PLACEHOLDER_PUSH_NOTIFICATIONS_COHORT = "pushNotificationsCohort";
     private static final String PLACEHOLDER_PUSH_NOTIFICATIONS_TEXT = "push-notification-text";
 
-    private static final String API_HOST = "test.api.ft.com";
     private static final String ARTICLE_UUID = UUID.randomUUID().toString();
     private static final String BLOG_UUID = UUID.randomUUID().toString();
     private static final String TX_ID = "tid_test";
@@ -117,7 +116,7 @@ public class InternalComponentsMapperTest {
         articleValidators.put(InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER, methodeContentPlaceholderValidator);
         articleValidators.put(InternalComponentsMapper.SourceCode.DYNAMIC_CONTENT, methodeArticleValidator);
 
-        internalComponentsMapper = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators, API_HOST);
+        internalComponentsMapper = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators);
     }
 
     @Test

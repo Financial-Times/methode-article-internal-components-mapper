@@ -4,7 +4,9 @@ import com.ft.bodyprocessing.BodyProcessingContext;
 import com.ft.bodyprocessing.DefaultTransactionIdBodyProcessingContext;
 import com.ft.bodyprocessing.writer.BodyWriter;
 import com.ft.uuidutils.GenerateV3UUID;
+
 import com.google.common.collect.Maps;
+
 import org.codehaus.stax2.XMLEventReader2;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,10 +14,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartElement;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -30,7 +33,7 @@ public class ImageSetXmlEventHandlerTest extends BaseXMLEventHandlerTest {
     private static final String ID_ATTRIBUTE = "id";
     private static final String IMAGE_SET_ID = "U11603541372105PPB";
 
-    private static final String FT_CONTENT_TAG = "content";
+    private static final String FT_CONTENT_TAG = "ft-content";
     private static final String GENERATED_UUID = GenerateV3UUID.singleDigested(ARTICLE_UUID + IMAGE_SET_ID).toString();
 
     @Mock
@@ -44,7 +47,7 @@ public class ImageSetXmlEventHandlerTest extends BaseXMLEventHandlerTest {
     private Map<String, String> expectedAttributes;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         eventHandler = new ImageSetXmlEventHandler();
 
         bodyProcessingContext = new MappedDataBodyProcessingContext(TEST_TID, Maps.immutableEntry("uuid", ARTICLE_UUID));

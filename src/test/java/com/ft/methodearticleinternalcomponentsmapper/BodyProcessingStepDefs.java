@@ -56,7 +56,6 @@ public class BodyProcessingStepDefs {
     private FieldTransformer bodyTransformer;
 
     private static final String TEXT = "Some text in between tags";
-    private static final String API_HOST = "test.api.ft.com";
 
     private MethodeBodyTransformationXMLEventHandlerRegistry registry;
 
@@ -98,27 +97,13 @@ public class BodyProcessingStepDefs {
             "http:\\/\\/ft.cartodb.com.*"
     );
 
-    private static final Map<String, String> contentTypeTemplates;
-
-    static {
-        contentTypeTemplates = new HashMap<>();
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Article", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/ImageSet", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/MediaResource", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Video", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/company/PublicCompany", "/organisations/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/ContentPackage", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Content", "/content/{{id}}");
-        contentTypeTemplates.put("http://www.ft.com/ontology/content/Image", "/content/{{id}}");
-    }
-
     private static String randomChars(int howMany) {
         return RandomStringUtils.randomAlphanumeric(howMany).toLowerCase();
     }
 
     @Before
     @SuppressWarnings("unchecked")
-    public void setup() throws Exception {
+    public void setup() {
         DocumentStoreApiClient documentStoreApiClient = mock(DocumentStoreApiClient.class);
         ConcordanceApiClient concordanceApiClient = mock(ConcordanceApiClient.class);
         VideoMatcher videoMatcher = new VideoMatcher(VIDEO_CONFIGS);
@@ -158,42 +143,41 @@ public class BodyProcessingStepDefs {
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(content);
 
         bodyTransformer = new BodyProcessingFieldTransformerFactory(documentStoreApiClient, videoMatcher,
-                interactiveGraphicsMatcher, contentTypeTemplates, API_HOST, concordanceApiClient,
-                CANONICAL_URL_TEMPLATE).newInstance();
+                interactiveGraphicsMatcher, concordanceApiClient, CANONICAL_URL_TEMPLATE).newInstance();
     }
 
     @Given("^the Methode body contains (.+) the transformer will (.+) and the replacement tag will be (.+)$")
-    public void the_methode_body_contains_transforms_into(String tagname, String rule, String replacement) throws Throwable {
+    public void the_methode_body_contains_transforms_into(String tagname, String rule, String replacement) {
         assertTagIsRegisteredToTransform(rule, tagname, replacement);
     }
 
     @Given("^the Methode body has (.+) the transformer will (.+)$")
-    public void the_methode_body_contains(String tagname, String rule) throws Throwable {
+    public void the_methode_body_contains(String tagname, String rule) {
         assertTagIsRegistered(tagname, rule);
     }
 
     @Given("^I have a body text in Methode XML format containing (.+)$")
-    public void i_have_body_text_in_methode_xml_format_containing(String tagname) throws Throwable {
+    public void i_have_body_text_in_methode_xml_format_containing(String tagname) {
         methodeBodyText = "<" + tagname + " title=\"title\">Text</" + tagname + ">";
     }
 
     @Given("^I have a body (.+?)$")
-    public void I_have_a_body(String html) throws Throwable {
+    public void I_have_a_body(String html) {
         methodeBodyText = "<body>" + html + "</body>";
     }
 
     @Given("^there are empty paragraphs in the body$")
-    public void there_are_empty_paragraphs() throws Throwable {
+    public void there_are_empty_paragraphs() {
         // no op!
     }
 
     @When("^I transform it into our Content Store format$")
-    public void i_transform_it_into_our_content_store_format() throws Throwable {
+    public void i_transform_it_into_our_content_store_format() {
         transformedBodyText = bodyTransformer.transform(methodeBodyText, TRANSACTION_ID);
     }
 
     @When("^I transform it$")
-    public void I_transform_it() throws Throwable {
+    public void I_transform_it() {
         transformedBodyText = bodyTransformer.transform(methodeBodyText, TRANSACTION_ID);
     }
 
@@ -203,52 +187,52 @@ public class BodyProcessingStepDefs {
     }
 
     @Then("^the start tag (.+) should have been removed$")
-    public void the_start_tag_should_have_been_removed(String tagname) throws Throwable {
+    public void the_start_tag_should_have_been_removed(String tagname) {
         assertThat("start tag wasn't removed", transformedBodyText, not(containsString("<" + tagname + ">")));
     }
 
     @Then("^the end tag (.+) should have been removed$")
-    public void the_end_tag_should_have_been_removed(String tagname) throws Throwable {
+    public void the_end_tag_should_have_been_removed(String tagname) {
         assertThat("end tag wasn't removed", transformedBodyText, not(containsString("</" + tagname + ">")));
     }
 
     @Then("^the text inside should not have been removed$")
-    public void the_text_inside_should_not_have_been_removed() throws Throwable {
+    public void the_text_inside_should_not_have_been_removed() {
         assertThat("Text was removed", transformedBodyText, containsString("Text"));
     }
 
     @And("^the text inside should have been removed$")
-    public void the_text_inside_should_have_been_removed() throws Throwable {
+    public void the_text_inside_should_have_been_removed() {
         assertThat("Text was removed", transformedBodyText, not(containsString("Text")));
     }
 
     @Then("^the start tag (.+) should have been replaced by (.+)$")
-    public void the_start_tag_tagname_should_have_been_replaced_by_replacement(String tagname, String replacement) throws Throwable {
+    public void the_start_tag_tagname_should_have_been_replaced_by_replacement(String replacement) {
         assertThat("start tag was removed", transformedBodyText, containsString("<" + replacement + ">"));
     }
 
     @And("^the end tag (.+) should have been replaced by (.+)$")
-    public void the_end_tag_tagname_should_have_been_replaced_by_replacement(String tagname, String replacement) throws Throwable {
+    public void the_end_tag_tagname_should_have_been_replaced_by_replacement(String replacement) {
         assertThat("end tag was removed", transformedBodyText, containsString("</" + replacement + ">"));
     }
 
     @Then("^the start tag (.+) should be present$")
-    public void the_start_tag_tagname_should_be_present(String tagname) throws Throwable {
+    public void the_start_tag_tagname_should_be_present(String tagname) {
         assertThat("start tag was removed", transformedBodyText, containsString("<" + tagname + ">"));
     }
 
     @And("^the end tag (.+) should be present$")
-    public void the_end_tag_tagname_should_be_present(String tagname) throws Throwable {
+    public void the_end_tag_tagname_should_be_present(String tagname) {
         assertThat("end tag was removed", transformedBodyText, containsString("</" + tagname + ">"));
     }
 
     @Given("^I have a? \".*\" in a Methode XML body like (.*)$")
-    public void I_have_body_text_in_Methode_XML_like_before(String body) throws Throwable {
+    public void I_have_body_text_in_Methode_XML_like_before(String body) {
         methodeBodyText = body;
     }
 
     @Given("^I have a rule to (.+) and an entity (.+)$")
-    public void I_have_a_rule_and_an_entity(String rule, String entity) throws Throwable {
+    public void I_have_a_rule_and_an_entity(String rule, String entity) {
         String handler = rulesAndHandlers.get(rule);
         String entitybasic = entity.substring(1, entity.length() - 1);
         EntityReferenceEventImpl event = new EntityReferenceEventImpl(null, entitybasic);
@@ -257,22 +241,22 @@ public class BodyProcessingStepDefs {
     }
 
     @Given("^the before tag (.+) and the after tag (.+) adheres to the (.+) rule$")
-    public void before_and_after_tag_name_adheres_to_rule(String name, String aftername, String rule) throws Throwable {
+    public void before_and_after_tag_name_adheres_to_rule(String name, String aftername, String rule) {
         assertTagIsRegisteredToTransform(rule, name, aftername);
     }
 
     @Then("^the body should be like (.*)$")
-    public void the_body_should_be_like_after(String after) throws Throwable {
+    public void the_body_should_be_like_after(String after) {
         assertThat("the body was not transformed as expected", transformedBodyText, is(after));
     }
 
     @Given("^an entity reference (.+)$")
-    public void An_entity_reference_entity(String entity) throws Throwable {
+    public void An_entity_reference_entity(String entity) {
         methodeBodyText = "<body>" + entity + "</body>";
     }
 
     @Then("^the entity should be replace by unicode codepoint (.+)$")
-    public void the_entity_should_be_replace_by_unicode_codepoint_codepoint(String codepoint) throws Throwable {
+    public void the_entity_should_be_replace_by_unicode_codepoint_codepoint(String codepoint) {
         final int codePointInt = Integer.decode(codepoint);
         final char[] chars = Character.toChars(codePointInt);
         final String expected = "<body>" + new String(chars) + "</body>";
@@ -280,7 +264,7 @@ public class BodyProcessingStepDefs {
     }
 
     @Then("^it is transformed the entity (.+) should be replaced by the unicode codepoint (.+)$")
-    public void the_entity_should_be_replace_by_unicode_codepoint(String entity, String codepoint) throws Throwable {
+    public void the_entity_should_be_replace_by_unicode_codepoint(String entity, String codepoint) {
         int codePointInt = Integer.decode(codepoint);
         char[] chars = Character.toChars(codePointInt);
         String expected = "<body>" + TEXT + new String(chars) + "</body>";
@@ -290,12 +274,12 @@ public class BodyProcessingStepDefs {
     }
 
     @Given("^I have an? \".*\" in a Methode article body like (.*)$")
-    public void I_have_something_in_a_Methode_article_body_like(String body) throws Throwable {
+    public void I_have_something_in_a_Methode_article_body_like(String body) {
         methodeBodyText = body;
     }
 
     @Given("^the tag (.+) adheres to the (.+)$")
-    public void tag_name_adheres_to_rule(String name, String rule) throws Throwable {
+    public void tag_name_adheres_to_rule(String name, String rule) {
         assertTagIsRegistered(name, rule);
     }
 

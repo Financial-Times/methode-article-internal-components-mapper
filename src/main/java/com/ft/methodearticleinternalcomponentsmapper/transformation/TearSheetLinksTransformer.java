@@ -22,7 +22,7 @@ public class TearSheetLinksTransformer implements XPathHandler {
     private static final Logger LOG = LoggerFactory.getLogger(TearSheetLinksTransformer.class);
 
     private static final String TME_AUTHORITY = "http://api.ft.com/system/FT-TME";
-    private static final String CONCEPT_TAG = "concept";
+    private static final String FT_CONCEPT_TAG = "ft-concept";
     private static final String COMPANY_TYPE = "http://www.ft.com/ontology/company/PublicCompany";
     private static final Pattern CONCEPT_UUID = Pattern.compile(
             ".*/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$",
@@ -78,7 +78,7 @@ public class TearSheetLinksTransformer implements XPathHandler {
             if (StringUtils.isNotBlank(id)) {
                 String conceptApiUrl = getConcordanceByTMEId(concordances, id);
                 if (StringUtils.isNotBlank(conceptApiUrl)) {
-                    Element newElement = el.getOwnerDocument().createElement(CONCEPT_TAG);
+                    Element newElement = el.getOwnerDocument().createElement(FT_CONCEPT_TAG);
                     newElement.setAttribute("id", getConceptIdFromUrl(conceptApiUrl));
                     newElement.setAttribute("type", COMPANY_TYPE);
                     newElement.setTextContent(el.getTextContent());

@@ -7,6 +7,7 @@ import com.ft.methodearticleinternalcomponentsmapper.model.concordance.ConceptVi
 import com.ft.methodearticleinternalcomponentsmapper.model.concordance.Concordance;
 import com.ft.methodearticleinternalcomponentsmapper.model.concordance.Concordances;
 import com.ft.methodearticleinternalcomponentsmapper.model.concordance.Identifier;
+
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.ElementNameAndTextQualifier;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -15,6 +16,11 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,10 +32,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.UUID;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -153,8 +155,8 @@ public class TearSheetLinksTransformerTest {
         String actual = serializeDocument(doc);
 
         String expectedBody = "<body>" + "<p>Some text</p>"
-                + "<p><concept type=\"http://www.ft.com/ontology/company/PublicCompany\" id=\"" + ORG_ID
-                + "\">concorded company name</concept></p>" + "</body>";
+                + "<p><ft-concept type=\"http://www.ft.com/ontology/company/PublicCompany\" id=\"" + ORG_ID
+                + "\">concorded company name</ft-concept></p>" + "</body>";
 
         Diff diff = new Diff(expectedBody, actual);
         diff.overrideElementQualifier(new ElementNameAndTextQualifier());
@@ -173,8 +175,8 @@ public class TearSheetLinksTransformerTest {
 
         String expectedBody = "<body>" + "<p>Some text</p>"
                 + "<p><company CompositeId=\"tmeid1\" DICoSEDOL=\"2297907\"> not concorded company name</company></p>"
-                + "<p><concept type=\"http://www.ft.com/ontology/company/PublicCompany\" id=\"" + ORG_ID
-                + "\">concorded company name</concept></p>" + "</body>";
+                + "<p><ft-concept type=\"http://www.ft.com/ontology/company/PublicCompany\" id=\"" + ORG_ID
+                + "\">concorded company name</ft-concept></p>" + "</body>";
 
         Diff diff = new Diff(expectedBody, actual);
         diff.overrideElementQualifier(new ElementNameAndTextQualifier());

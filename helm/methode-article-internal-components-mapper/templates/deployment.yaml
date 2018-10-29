@@ -45,11 +45,6 @@ spec:
           value: {{ .Values.service.DocStoreUrl }}
         - name: CONCORDANCE_API_URL
           value: {{ .Values.service.ConcordanceUrl }}
-        - name: API_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: global-config
-              key: api.host
         - name: KAFKA_PROXY_URL
           valueFrom:
             configMapKeyRef:

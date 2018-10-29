@@ -14,6 +14,7 @@ import com.ft.methodearticleinternalcomponentsmapper.clients.ConcordanceApiClien
 import com.ft.methodearticleinternalcomponentsmapper.clients.DocumentStoreApiClient;
 import com.ft.methodearticleinternalcomponentsmapper.transformation.xslt.ModularXsltBodyProcessor;
 import com.ft.methodearticleinternalcomponentsmapper.transformation.xslt.XsltFile;
+
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
@@ -26,26 +27,20 @@ import static java.util.Arrays.asList;
 
 public class BodyProcessingFieldTransformerFactory implements FieldTransformerFactory {
 
+    private final Map<String, XPathHandler> xpathHandlers;
     private DocumentStoreApiClient documentStoreApiClient;
     private VideoMatcher videoMatcher;
     private InteractiveGraphicsMatcher interactiveGraphicsMatcher;
-    private final Map<String, XPathHandler> xpathHandlers;
-    private final Map<String, String> contentTypeTemplates;
-    private final String apiHost;
     private String canonicalUrlTemplate;
 
     public BodyProcessingFieldTransformerFactory(final DocumentStoreApiClient documentStoreApiClient,
                                                  final VideoMatcher videoMatcher,
                                                  final InteractiveGraphicsMatcher interactiveGraphicsMatcher,
-                                                 final Map<String, String> contentTypeTemplates,
-                                                 final String apiHost,
                                                  ConcordanceApiClient concordanceApiClient,
                                                  String canonicalUrlTemplate) {
         this.documentStoreApiClient = documentStoreApiClient;
         this.videoMatcher = videoMatcher;
         this.interactiveGraphicsMatcher = interactiveGraphicsMatcher;
-        this.contentTypeTemplates = contentTypeTemplates;
-        this.apiHost = apiHost;
         xpathHandlers = ImmutableMap.of("//company", new TearSheetLinksTransformer(concordanceApiClient));
         this.canonicalUrlTemplate = canonicalUrlTemplate;
     }
@@ -73,12 +68,12 @@ public class BodyProcessingFieldTransformerFactory implements FieldTransformerFa
                 stAXTransformingBodyProcessor(),
                 new MethodeLinksBodyProcessor(documentStoreApiClient, canonicalUrlTemplate),
                 new ModularXsltBodyProcessor(xslts()),
-                ftTagsLinksRewriteBodyProcessor(),
                 new RegexReplacerBodyProcessor("\\.\\s*\\.\\s*\\.\\s*", "\u2026"),
                 new RegexReplacerBodyProcessor("---", "\u2014"),
                 new RegexReplacerBodyProcessor("--", "\u2013"),
                 new RegexReplacerBodyProcessor("</p>(\\s*<br\\s*/>\\s*)*<p>", "</p><p>"),
                 new RegexRemoverBodyProcessor("(<p>)(\\s|(<br\\s*/>))*(</p>)"),
+                new RegexRemoverBodyProcessor("(<p/>)"),
                 new RegexReplacerBodyProcessor("</p>(\\r?\\n)+<p>", "</p>" + System.lineSeparator() + "<p>"),
                 new RegexReplacerBodyProcessor("</p> +<p>", "</p><p>"),
                 new Html5SelfClosingTagBodyProcessor()
@@ -108,7 +103,4 @@ public class BodyProcessingFieldTransformerFactory implements FieldTransformerFa
         return new StAXTransformingBodyProcessor(new StripByPredefinedAttributesAndValuesEventHandlerRegistry());
     }
 
-    private BodyProcessor ftTagsLinksRewriteBodyProcessor() {
-        return new StAXTransformingBodyProcessor(new ModelBodyFTTagsLinkRewriteXmlEventHandlerRegistry(contentTypeTemplates, apiHost));
-    }
 }

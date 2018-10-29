@@ -8,7 +8,7 @@ Feature: Body processing Company Tags
   Examples:
     | before                                                         | after                                                         |
     # Text within the a tag is preserved:
-    | <p><company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C"  DICoSEDOL="2297907"  DICoTickerSymbol="C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.</p> | <p><ft-concept type="http://www.ft.com/ontology/company/PublicCompany" url="http://test.api.ft.com/organisations/704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.</p>               |
+    | <p><company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C"  DICoSEDOL="2297907"  DICoTickerSymbol="C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.</p> | <p><ft-concept type="http://www.ft.com/ontology/company/PublicCompany" id="704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.</p>               |
    
   Scenario Outline: Company tags are stripped for missing Composite ids
     Given the Methode body has <tagname> the transformer will STRIP ELEMENT AND LEAVE CONTENT BY DEFAULT
@@ -31,7 +31,7 @@ Feature: Body processing Company Tags
   Examples:
      | before                                                         | after                                                         |
     # Text within the a tag is preserved:
-    | <p><company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C" CompositeId="notconcorded">Not Concorded Company</company> more text here<company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.</p> |<p>Not Concorded Company more text here<ft-concept type="http://www.ft.com/ontology/company/PublicCompany" url="http://test.api.ft.com/organisations/704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.</p>               |
+    | <p><company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C" CompositeId="notconcorded">Not Concorded Company</company> more text here<company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.</p> |<p>Not Concorded Company more text here<ft-concept type="http://www.ft.com/ontology/company/PublicCompany" id="704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.</p>               |
    
 
   Scenario Outline: Company tags are processed wherever they are in the story body xpath
@@ -41,7 +41,7 @@ Feature: Body processing Company Tags
   Examples:
     | before                                                         | after                                                         |
     # Text within the a tag is preserved:
-    | <b><company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C"  DICoSEDOL="2297907"  DICoTickerSymbol="C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.</b> | <strong><ft-concept type="http://www.ft.com/ontology/company/PublicCompany" url="http://test.api.ft.com/organisations/704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.</strong> |
-    | <company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C"  DICoSEDOL="2297907"  DICoTickerSymbol="C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.        | <ft-concept type="http://www.ft.com/ontology/company/PublicCompany" url="http://test.api.ft.com/organisations/704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.        |
+    | <b><company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C"  DICoSEDOL="2297907"  DICoTickerSymbol="C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.</b> | <strong><ft-concept type="http://www.ft.com/ontology/company/PublicCompany" id="704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.</strong> |
+    | <company DICoName="Citigroup Inc" DICoFTMWTickercode="us:C"  DICoSEDOL="2297907"  DICoTickerSymbol="C" DICoTickerExchangeCode="" CompositeId="TnN0ZWluX09OX0ZvcnR1bmVDb21wYW55X0M=-T04=">Citigroup</company> has been picked to safeguard $230bn worth of securities.        | <ft-concept type="http://www.ft.com/ontology/company/PublicCompany" id="704a3225-9b5c-3b4f-93c7-8e6a6993bfb0">Citigroup</ft-concept> has been picked to safeguard $230bn worth of securities.        |
 
  

@@ -43,7 +43,7 @@ public class MethodeLinksBodyProcessor implements BodyProcessor {
     static final String BASE_CONTENT_TYPE = "http://www.ft.com/ontology/content/";
     static final String DEFAULT_CONTENT_TYPE = "http://www.ft.com/ontology/content/Content";
 
-    private static final String CONTENT_TAG = "content";
+    private static final String FT_CONTENT_TAG = "ft-content";
     private static final String ANCHOR_PREFIX = "#";
     private static final String TYPE = "type";
     private static final String UUID_REGEX = ".*?([0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}).*";
@@ -282,7 +282,7 @@ public class MethodeLinksBodyProcessor implements BodyProcessor {
     }
 
     private void replaceLinkToContentPresentInDocumentStore(Node node, Content content) {
-        Element newElement = node.getOwnerDocument().createElement(CONTENT_TAG);
+        Element newElement = node.getOwnerDocument().createElement(FT_CONTENT_TAG);
         newElement.setAttribute("id", content.getUuid());
 
         if (!StringUtils.isBlank(content.getType())) {

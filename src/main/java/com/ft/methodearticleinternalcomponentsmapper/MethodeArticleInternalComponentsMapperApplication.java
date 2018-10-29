@@ -121,15 +121,12 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 new BodyProcessingFieldTransformerFactory(documentStoreApiClient,
                         new VideoMatcher(configuration.getVideoSiteConfig()),
                         new InteractiveGraphicsMatcher(configuration.getInteractiveGraphicsWhitelist()),
-                        configuration.getContentTypeTemplates(),
-                        configuration.getApiHost(),
                         concordanceApiClient,
                         configuration.getCanonicalUrlTemplate()
                 ).newInstance(),
                 new Html5SelfClosingTagBodyProcessor(),
                 blogUuidResolver,
-                articleValidators,
-                configuration.getApiHost()
+                articleValidators
         );
 
         ConsumerConfiguration consumerConfig = configuration.getConsumerConfiguration();

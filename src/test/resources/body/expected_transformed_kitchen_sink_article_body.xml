@@ -16,12 +16,12 @@
 </p>
 <p><strong>Links</strong>
 </p>
-<p>This is a link for an FT article that has been cut and paste from a browser: <ft-content url="http://api.ft.com/content/e78a8668-c997-11e1-aae2-002128161462" title="www.ft.com" type="http://www.ft.com/ontology/content/Article">http://www.ft.com/cms/s/2/e78a8668-c997-11e1-aae2-002128161462.html</ft-content>.</p>
-<p>This link was added using Right-click, Insert Hyperlink: <ft-content url="http://api.ft.com/content/9b9fed88-d986-11e2-bce1-002128161462" type="http://www.ft.com/ontology/content/Article">A story about something financial</ft-content>
+<p>This is a link for an FT article that has been cut and paste from a browser: <ft-content id="e78a8668-c997-11e1-aae2-002128161462" title="www.ft.com" type="http://www.ft.com/ontology/content/Article">http://www.ft.com/cms/s/2/e78a8668-c997-11e1-aae2-002128161462.html</ft-content>.</p>
+<p>This link was added using Right-click, Insert Hyperlink: <ft-content id="9b9fed88-d986-11e2-bce1-002128161462" type="http://www.ft.com/ontology/content/Article">A story about something financial</ft-content>
 </p>
-<p>This link was added using drag and drop of an article: <ft-content url="http://api.ft.com/content/9b9fed88-d986-11e2-bce1-002128161462" type="http://www.ft.com/ontology/content/Article">A story about something financial that was dragged and dropped</ft-content>
+<p>This link was added using drag and drop of an article: <ft-content id="9b9fed88-d986-11e2-bce1-002128161462" type="http://www.ft.com/ontology/content/Article">A story about something financial that was dragged and dropped</ft-content>
 </p>
-<p>This link was added by cutting and pasing a URL of a valid FT article: <ft-content url="http://api.ft.com/content/f3b60ad0-acda-11e2-a7c4-002128161462" title="www.ft.com" type="http://www.ft.com/ontology/content/Article">http://www.ft.com/cms/s/2/f3b60ad0-acda-11e2-a7c4-002128161462.html</ft-content>
+<p>This link was added by cutting and pasing a URL of a valid FT article: <ft-content id="f3b60ad0-acda-11e2-a7c4-002128161462" title="www.ft.com" type="http://www.ft.com/ontology/content/Article">http://www.ft.com/cms/s/2/f3b60ad0-acda-11e2-a7c4-002128161462.html</ft-content>
 </p>
 <p>This link was added by cutting and pasting a URL from the BBC: <a href="http://www.bbc.co.uk/news/world-africa-24577711" title="www.bbc.co.uk">http://www.bbc.co.uk/news/world-africa-24577711</a>
 </p>
@@ -118,7 +118,7 @@
 <p>It forms the centrepiece of a long-awaited deal between the government and EDF and paves the way for the construction of the £16bn power station which, when completed in 2023, will provide 7 per cent of the UK’s electricity.</p>
 <p><strong>Typical Body Text With Promo Box</strong>
 </p>
-<promo-box><promo-title><p>Interactive graphic</p></promo-title><promo-headline><p><ft-content url="http://api.ft.com/content/d586f60a-5be5-11e2-bf31-00144feab49a" title="Obama’s inner circle - FT.com" type="http://www.ft.com/ontology/content/Article">Obama’s inner circle</ft-content>
+<promo-box><promo-title><p>Interactive graphic</p></promo-title><promo-headline><p><ft-content id="d586f60a-5be5-11e2-bf31-00144feab49a" title="Obama’s inner circle - FT.com" type="http://www.ft.com/ontology/content/Article">Obama’s inner circle</ft-content>
 </p></promo-headline><promo-intro><p>Find out more about the people whom Barack Obama considers his “brain trust”.</p></promo-intro></promo-box>
 
 
@@ -137,8 +137,8 @@
 <p><strong>Images</strong>
 </p>
 
-<ft-content data-embedded="true" url="http://api.ft.com/content/89db87d4-3b37-11e3-1122-97bbf262bf2b" type="http://www.ft.com/ontology/content/ImageSet"></ft-content>
-<ft-content data-embedded="true" url="http://api.ft.com/content/ab39a514-3b37-11e3-1122-97bbf262bf2b" type="http://www.ft.com/ontology/content/ImageSet"></ft-content>
+<ft-content data-embedded="true" id="89db87d4-3b37-11e3-1122-97bbf262bf2b" type="http://www.ft.com/ontology/content/ImageSet"></ft-content>
+<ft-content data-embedded="true" id="ab39a514-3b37-11e3-1122-97bbf262bf2b" type="http://www.ft.com/ontology/content/ImageSet"></ft-content>
 
 <p>The first image is a GIF, the second a JPEG. Text should wrap around inline images, so the following is some typical body text.</p>
 <p>The UK government has struck a deal with the French utility EDF to build the country’s first new nuclear plant in a generation.</p>
@@ -407,7 +407,7 @@
 <hr/>
 <hr/>
 <hr/>
-<recommended><recommended-title>Title</recommended-title><p>Intro</p><ul><li><ft-content type="http://www.ft.com/ontology/content/Article" url="http://api.ft.com/content/a04cb831-6373-4548-ad77-2c43431d6552">Internal articles’s title added by methode automatically</ft-content></li><li><ft-content type="http://www.ft.com/ontology/content/Article" url="http://api.ft.com/content/a04cb831-6373-4548-ad77-2c43431d6552">Manually added FT article’s manual title</ft-content></li><li><a href="http://example.com/manually/added/document1.pdf">External link’s manually added title</a></li></ul></recommended>
+<recommended><recommended-title>Title</recommended-title><p>Intro</p><ul><li><ft-content id="a04cb831-6373-4548-ad77-2c43431d6552" type="http://www.ft.com/ontology/content/Article">Internal articles’s title added by methode automatically</ft-content></li><li><ft-content id="a04cb831-6373-4548-ad77-2c43431d6552" type="http://www.ft.com/ontology/content/Article">Manually added FT article’s manual title</ft-content></li><li><a href="http://example.com/manually/added/document1.pdf">External link’s manually added title</a></li></ul></recommended>
 <div class="layout" data-layout-name="name" data-layout-width="body">
     <div class="layout-slot">
         <h2>some heading</h2>

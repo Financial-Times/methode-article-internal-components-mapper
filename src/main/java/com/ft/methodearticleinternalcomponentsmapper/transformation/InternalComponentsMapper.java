@@ -81,7 +81,6 @@ public class InternalComponentsMapper {
     private final BodyProcessor htmlFieldProcessor;
     private final BlogUuidResolver blogUuidResolver;
     private final Map<String, MethodeArticleValidator> articleValidators;
-    private final String apiHost;
 
     private static final String NO_PICTURE_FLAG = "No picture";
     private static final String DEFAULT_IMAGE_ATTRIBUTE_DATA_EMBEDDED = "data-embedded";
@@ -117,13 +116,11 @@ public class InternalComponentsMapper {
     public InternalComponentsMapper(FieldTransformer bodyTransformer,
                                     BodyProcessor htmlFieldProcessor,
                                     BlogUuidResolver blogUuidResolver,
-                                    Map<String, MethodeArticleValidator> articleValidators,
-                                    String apiHost) {
+                                    Map<String, MethodeArticleValidator> articleValidators) {
         this.bodyTransformer = bodyTransformer;
         this.htmlFieldProcessor = htmlFieldProcessor;
         this.blogUuidResolver = blogUuidResolver;
         this.articleValidators = articleValidators;
-        this.apiHost = apiHost;
     }
 
     public InternalComponents map(EomFile eomFile, String transactionId, Date lastModified, boolean preview) {
@@ -240,7 +237,7 @@ public class InternalComponentsMapper {
         String sourceCode = xpath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
         final String type = determineType(xpath, attributesDocument, sourceCode);
 
-        final String transformedBody = transformField(sourceBodyXML, bodyTransformer, transactionId, Maps.immutableEntry("uuid", uuid.toString()), Maps.immutableEntry("apiHost", apiHost));
+        final String transformedBody = transformField(sourceBodyXML, bodyTransformer, transactionId, Maps.immutableEntry("uuid", uuid.toString()));
         final String validatedTransformedBody = validateBody(mode, type, transformedBody, uuid);
         final String postProcessedTransformedBody = putMainImageReferenceInBodyXml(xpath, attributesDocument, generateMainImageUuid(xpath, valueDocument), validatedTransformedBody);
 
@@ -336,7 +333,7 @@ public class InternalComponentsMapper {
 
     private String putMainImageReferenceInBodyNode(Node bodyNode, String mainImageUUID) throws TransformerException {
         Element newElement = bodyNode.getOwnerDocument().createElement("ft-content");
-        newElement.setAttribute("url", String.format("http://%s/content/%s", apiHost, mainImageUUID));
+        newElement.setAttribute("id", mainImageUUID);
         newElement.setAttribute("type", IMAGE_SET_TYPE);
         newElement.setAttribute(DEFAULT_IMAGE_ATTRIBUTE_DATA_EMBEDDED, "true");
         bodyNode.insertBefore(newElement, bodyNode.getFirstChild());

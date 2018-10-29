@@ -70,7 +70,7 @@ consumer:
     severity: 2
     businessImpact: "Internal components of newly published Methode articles will not be available from the InternalContent API"
     technicalSummary: "Tests that kafka-proxy is reachable and message can be consumed"
-    panicGuideUrl: "https://dewey.ft.com/up-maicm.html"
+    panicGuideUrl: "https://dewey.in.ft.com/runbooks/up-maicm"
   systemCode: methode-web-pub
 
 producer:
@@ -87,7 +87,7 @@ producer:
     severity: 2
     businessImpact: "Internal components of newly published Methode articles will not be available from the InternalContent API"
     technicalSummary: "Tests that kafka-proxy is reachable and the CmsPublicationEvents topic exists"
-    panicGuideUrl: "https://dewey.ft.com/up-maicm.html"
+    panicGuideUrl: "https://dewey.in.ft.com/runbooks/up-maicm"
 
 contentUriPrefix: http://methode-article-internal-components-mapper.svc.ft.com/internalcomponents
 
@@ -154,18 +154,6 @@ concordanceApi:
     connectionConfiguration:
         numberOfConnectionAttempts: 3
         timeoutMultiplier: 1000
-
-contentTypeTemplates:
-  http://www.ft.com/ontology/content/Article: /content/{{id}}
-  http://www.ft.com/ontology/content/ImageSet: /content/{{id}}
-  http://www.ft.com/ontology/content/MediaResource: /content/{{id}}
-  http://www.ft.com/ontology/content/Video: /content/{{id}}
-  http://www.ft.com/ontology/company/PublicCompany: /organisations/{{id}}
-  http://www.ft.com/ontology/content/ContentPackage: /content/{{id}}
-  http://www.ft.com/ontology/content/Content: /content/{{id}}
-  http://www.ft.com/ontology/content/Image: /content/{{id}}
-
-apiHost: "api.ft.com"
 
 validationConfiguration:
     authorityPrefix: http://api.ft.com/system/

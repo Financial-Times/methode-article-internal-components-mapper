@@ -21,7 +21,7 @@ public class ImageSetXmlEventHandler extends BaseXMLEventHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageSetXmlEventHandler.class);
 
     private static final String ID_ATTRIBUTE = "id";
-    private static final String FT_CONTENT_TAG = "content";
+    private static final String FT_CONTENT_TAG = "ft-content";
 
     @Override
     public void handleStartElementEvent(StartElement event, XMLEventReader xmlEventReader, BodyWriter eventWriter,
