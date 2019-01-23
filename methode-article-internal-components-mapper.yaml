@@ -164,6 +164,7 @@ contentTypeTemplates:
   http://www.ft.com/ontology/content/ContentPackage: /content/{{id}}
   http://www.ft.com/ontology/content/Content: /content/{{id}}
   http://www.ft.com/ontology/content/Image: /content/{{id}}
+  http://www.ft.com/ontology/content/Audio: /content/{{id}}
 
 apiHost: "api.ft.com"
 
