@@ -371,19 +371,6 @@ public class MethodeLinksBodyProcessorTest {
 		String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
 
 		assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-    }
-    
-    @Test
-	public void thatWhitespaceNotRemovedWhenParenthesisPunctuation() {
-        when(clientResponse.getStatus()).thenReturn(200);
-        when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-
-		String body = "<body><p><a href=\"" + uuid + "\">link text</a>  (some details)</p></body>";
-		String expectedBody = "<body><p><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">link text</content> (some details)</p></body>";
-		
-		String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-
-		assertThat(processedBody, is(identicalXmlTo(expectedBody)));
 	}
 
 	@Test

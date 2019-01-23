@@ -55,7 +55,7 @@ public class MethodeLinksBodyProcessor implements BodyProcessor {
     private static final String STRING_ENDS_WITH_WHITESPACE_REGEX = ".*\\s+$";
     private static final Pattern STRING_ENDS_WITH_WHITESPACE_REGEX_PATTERN = Pattern.compile(STRING_ENDS_WITH_WHITESPACE_REGEX);
     private static final String STRING_STARTS_WITH_WHITESPACE_REGEX = "^\\s+";
-    private static final String STRING_STARTS_WITH_PUNCTUATION_REGEX = "^(\\p{Pc}|\\p{Pd}|\\p{Pe}|\\p{Pf}|\\p{Po})+.*";
+    private static final String STRING_STARTS_WITH_PUNCTUATION_REGEX = "^\\p{Punct}+.*";
     private static final Pattern STRING_STARTS_WITH_PUNCTUATION_REGEX_PATTERN = Pattern.compile(STRING_STARTS_WITH_PUNCTUATION_REGEX);
     private static final String STRING_ENDS_WITH_PUNCTUATION_REGEX = "\\p{Punct}+$";
     private static final Pattern STRING_ENDS_WITH_PUNCTUATION_REGEX_PATTERN = Pattern.compile(STRING_ENDS_WITH_PUNCTUATION_REGEX);
