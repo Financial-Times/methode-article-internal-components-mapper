@@ -51,6 +51,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
     private static final String KITCHEN_SINK_ASSET3_UUID = "9b9fed88-d986-11e2-bce1-002128161462";
     private static final String KITCHEN_SINK_ASSET4_UUID = "f3b60ad0-acda-11e2-a7c4-002128161462";
     private static final String KITCHEN_SINK_ASSET5_UUID = "a04cb831-6373-4548-ad77-2c43431d6552";
+    private static final String AUDIO_UUID = "e3ae0465-e935-47d9-8273-dc3180b47046";
     private static final List<String> INTERACTIVE_GRAPHICS_URLS = Arrays.asList(
             "http://ft.cartodb.com/viz/be9b3ea0-4fc3-11e4-8181-0e853d047bba/embed_map",
             "http://ig.ft.com/features/2014-07-21_oilProd/v3/",
@@ -71,6 +72,7 @@ public class BodyProcessingFieldTransformerFactoryTest {
         contentTypeTemplates.put("http://www.ft.com/ontology/content/ContentPackage", "/content/{{id}}");
         contentTypeTemplates.put("http://www.ft.com/ontology/content/Content", "/content/{{id}}");
         contentTypeTemplates.put("http://www.ft.com/ontology/content/Image", "/content/{{id}}");
+        contentTypeTemplates.put("http://www.ft.com/ontology/content/Audio", "/content/{{id}}");
     }
 
     private static final String apiHost = "api.ft.com";
@@ -1860,6 +1862,17 @@ public class BodyProcessingFieldTransformerFactoryTest {
 
         String originalRecommendedContent = "<body><recommended><ul><li><a href=\"http://www.ft.com/content/" + KITCHEN_SINK_ASSET5_UUID + "\">Manually added FT article’s manual title</a></li></ul></recommended></body>";
         String transformedContent = "<body><recommended><recommended-title/><ul><li><ft-content type=\"http://www.ft.com/ontology/content/Article\" url=\"http://api.ft.com/content/" + KITCHEN_SINK_ASSET5_UUID + "\">Manually added FT article’s manual title</ft-content></li></ul></recommended></body>";
+        checkTransformation(originalRecommendedContent, transformedContent);
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransformManualAudioLinkFromRecommended() {
+        when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString()))
+                .thenReturn(Collections.singletonList(new Content(AUDIO_UUID, "Audio")));
+
+        String originalRecommendedContent = "<body><recommended><ul><li><a href=\"http://www.ft.com/content/" + AUDIO_UUID + "\">Manually added FT audio’s manual title</a></li></ul></recommended></body>";
+        String transformedContent = "<body><recommended><recommended-title/><ul><li><ft-content type=\"http://www.ft.com/ontology/content/Audio\" url=\"http://api.ft.com/content/" + AUDIO_UUID + "\">Manually added FT audio’s manual title</ft-content></li></ul></recommended></body>";
         checkTransformation(originalRecommendedContent, transformedContent);
     }
 

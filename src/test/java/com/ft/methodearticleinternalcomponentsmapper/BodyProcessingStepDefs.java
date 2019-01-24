@@ -78,6 +78,7 @@ public class BodyProcessingStepDefs {
     private static final String TME_ID_NOT_CONCORDED = "notconcorded";
     private static final String API_URL_CONCORDED = "http://api.ft.com/organisations/704a3225-9b5c-3b4f-93c7-8e6a6993bfb0";
     private static final String CONTENT_STORE_UUID = "fbbee07f-5054-4a42-b596-64e0625d19a6";
+	private static final String CONTENT_STORE_AUDIO_UUID = "f62a67e1-249c-4579-b2f5-147db1622934 ";
     private static final Identifier identifier = new Identifier(TME_AUTHORITY, TME_ID_CONCORDED);
     private static final ConceptView concept = new ConceptView(API_URL_CONCORDED, API_URL_CONCORDED);
 
@@ -157,6 +158,9 @@ public class BodyProcessingStepDefs {
 
         List<Content> content = Collections.singletonList(new Content(CONTENT_STORE_UUID, "Article"));
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(content);
+        
+        List<Content> audio = Collections.singletonList(new Content(CONTENT_STORE_AUDIO_UUID, "Audio"));
+        when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(audio);
 
         bodyTransformer = new BodyProcessingFieldTransformerFactory(documentStoreApiClient, videoMatcher,
                 interactiveGraphicsMatcher, contentTypeTemplates, API_HOST, concordanceApiClient,
