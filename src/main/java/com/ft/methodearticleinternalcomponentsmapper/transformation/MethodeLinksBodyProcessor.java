@@ -7,14 +7,12 @@ import com.ft.bodyprocessing.TransactionIdBodyProcessingContext;
 import com.ft.methodearticleinternalcomponentsmapper.clients.DocumentStoreApiClient;
 import com.ft.methodearticleinternalcomponentsmapper.exception.TransformationException;
 import com.ft.methodearticleinternalcomponentsmapper.model.Content;
-import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -52,13 +50,6 @@ public class MethodeLinksBodyProcessor implements BodyProcessor {
     private static final Pattern UUID_PARAM_REGEX_PATTERN = Pattern.compile(UUID_PARAM_REGEX);
     private static final String FT_COM_URL_REGEX = "^https*:\\/\\/www.ft.com\\/.*";
     private static final Pattern FT_COM_URL_REGEX_PATTERN = Pattern.compile(FT_COM_URL_REGEX);
-    private static final String STRING_ENDS_WITH_WHITESPACE_REGEX = ".*\\s+$";
-    private static final Pattern STRING_ENDS_WITH_WHITESPACE_REGEX_PATTERN = Pattern.compile(STRING_ENDS_WITH_WHITESPACE_REGEX);
-    private static final String STRING_STARTS_WITH_WHITESPACE_REGEX = "^\\s+";
-    private static final String STRING_STARTS_WITH_PUNCTUATION_REGEX = "^(\\p{Pc}|\\p{Pd}|\\p{Pe}|\\p{Pf}|\\p{Po})+.*";
-    private static final Pattern STRING_STARTS_WITH_PUNCTUATION_REGEX_PATTERN = Pattern.compile(STRING_STARTS_WITH_PUNCTUATION_REGEX);
-    private static final String STRING_ENDS_WITH_PUNCTUATION_REGEX = "\\p{Punct}+$";
-    private static final Pattern STRING_ENDS_WITH_PUNCTUATION_REGEX_PATTERN = Pattern.compile(STRING_ENDS_WITH_PUNCTUATION_REGEX);
 
     private DocumentStoreApiClient documentStoreApiClient;
     private String canonicalUrlTemplate;
@@ -184,7 +175,6 @@ public class MethodeLinksBodyProcessor implements BodyProcessor {
         for (Node aTag : aTags.keySet()) {
             Optional<Content> matchingContent = getMatchingContent(content, aTags.get(aTag));
             if (matchingContent.isPresent()) {
-                fixFormattingOfLinkText(aTag);
                 replaceLinkToContentPresentInDocumentStore(aTag, matchingContent.get());
             } else if (isConvertibleToAssetOnFtCom(aTag)) {
                 transformLinkToAssetOnFtCom(aTag, aTags.get(aTag));
@@ -194,91 +184,6 @@ public class MethodeLinksBodyProcessor implements BodyProcessor {
 
     private Optional<Content> getMatchingContent(List<Content> content, String uuid) {
         return content.stream().filter(c -> c.getUuid().equals(uuid)).findFirst();
-    }
-
-    private void fixFormattingOfLinkText(Node aTagNode) {
-        Node parentNode = aTagNode.getParentNode();
-        if (parentNode != null) {
-            Node nodeBeforeATag = aTagNode.getPreviousSibling();
-            
-            // Adding space if needed, right before the <a> tag
-            if (isTextNode(nodeBeforeATag)) {
-                String beforeATagText = nodeBeforeATag.getTextContent();              
-                if (!Strings.isNullOrEmpty(beforeATagText)) {
-                    String newTextBefore = fixImproperWhitespaceBeforeATag(beforeATagText);
-                    nodeBeforeATag.setTextContent(newTextBefore);
-                } 
-            }
-            
-            // Extracting punctuation outside the <a> tag
-            String linkText = aTagNode.getTextContent().trim();
-            String punctuation = getPunctuationFromLinkText(linkText);
-            Node nodeAfterATag = aTagNode.getNextSibling();
-            
-            if (punctuation != null) {
-                String newLinkText = linkText.substring(0, linkText.length() - punctuation.length());
-                aTagNode.setTextContent(newLinkText);
-                appendPunctuationToNode(punctuation, nodeAfterATag, parentNode);
-            } else if (isTextNode(nodeAfterATag)) {
-                String newTextAfter = fixImproperWhitespaceAfterATag(nodeAfterATag.getTextContent());
-                nodeAfterATag.setTextContent(newTextAfter);
-            }
-        }
-    }
-
-    private boolean isTextNode(Node node) {
-        return node != null && node.getNodeType() == Node.TEXT_NODE;
-    }
-
-    private String getPunctuationFromLinkText(String text) {
-        Matcher matcher = STRING_ENDS_WITH_PUNCTUATION_REGEX_PATTERN.matcher(text);
-
-        if (matcher.find()) {
-            return matcher.group();
-        }
-
-        return null;
-    }
-
-    private String appendPunctuationBeforeContentText(String text, String punctuation) {
-        if (Character.isWhitespace(text.charAt(0))) {
-            return punctuation + text;
-        }
-        
-        return punctuation + " " + text;
-    }
-
-    private String fixImproperWhitespaceBeforeATag (String text) {
-        Matcher matcher = STRING_ENDS_WITH_WHITESPACE_REGEX_PATTERN.matcher(text);
-        if (matcher.matches()) {
-            return text;
-        }
-        
-        return text + " ";
-    }
-
-    private String fixImproperWhitespaceAfterATag(String text) {
-        if (Strings.isNullOrEmpty(text.trim())) {
-            return text;
-        }
-        
-        String replaced = text.replaceAll(STRING_STARTS_WITH_WHITESPACE_REGEX, "");
-        Matcher matcher = STRING_STARTS_WITH_PUNCTUATION_REGEX_PATTERN.matcher(replaced);
-        if (matcher.matches()) {
-            return replaced;
-        }
-        return " " + replaced;
-    }
-
-    private void appendPunctuationToNode(String punctuation, Node currentNode, Node parentNode) {
-        if (!isTextNode(currentNode)) {
-            Text newChild = parentNode.getOwnerDocument().createTextNode(punctuation);
-            parentNode.appendChild(newChild);
-        } else {
-            String afterATagText = currentNode.getTextContent();
-            String newText = appendPunctuationBeforeContentText(afterATagText, punctuation);
-            currentNode.setTextContent(newText);
-        }
     }
 
     private void replaceLinkToContentPresentInDocumentStore(Node node, Content content) {
@@ -293,7 +198,7 @@ public class MethodeLinksBodyProcessor implements BodyProcessor {
 
         Optional<String> nodeValue = getTitleAttributeIfExists(node);
         nodeValue.ifPresent(s -> newElement.setAttribute("title", s));
-        newElement.setTextContent(node.getTextContent().trim());
+        newElement.setTextContent(node.getTextContent());
         node.getParentNode().replaceChild(newElement, node);
     }
 

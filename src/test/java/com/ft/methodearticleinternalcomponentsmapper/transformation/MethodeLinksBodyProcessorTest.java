@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyCollection;
-import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -127,10 +126,10 @@ public class MethodeLinksBodyProcessorTest {
     public void shouldReplaceNodeWhenHrefContainsUuidPresentInDocumentStore() {
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
 
-        String body = "<body><a href=\"http://www.url.com/" + uuid + "\" title=\"Some absurd text here\">Link Text</a></body>";
+        String body = "<body><a href=\"http://www.url.com/" + uuid + "\" title=\"Some absurd text here\"> Link Text</a></body>";
         String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
 
-        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">Link Text</content></body>")));
+        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\"> Link Text</content></body>")));
     }
 
     @Test
@@ -138,10 +137,10 @@ public class MethodeLinksBodyProcessorTest {
     public void shouldSetContentTypeToDefaultValueWhenTypeIsMissingFromDocumentStore() {
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"")));
 
-        String body = "<body><a href=\"http://www.url.com/" + uuid + "\" title=\"Some absurd text here\">Link Text</a></body>";
+        String body = "<body><a href=\"http://www.url.com/" + uuid + "\" title=\"Some absurd text here\"> Link Text</a></body>";
         String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
 
-        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.DEFAULT_CONTENT_TYPE + "\">Link Text</content></body>")));
+        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.DEFAULT_CONTENT_TYPE + "\"> Link Text</content></body>")));
     }
 
     @Test
@@ -149,10 +148,10 @@ public class MethodeLinksBodyProcessorTest {
     public void shouldReplaceNodeWhenHrefContainsOnlyUuidPresentInDocumentStore() {
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
 
-        String body = "<body><a href=\"" + uuid + "\" title=\"Some absurd text here\">Link Text</a></body>";
+        String body = "<body><a href=\"" + uuid + "\" title=\"Some absurd text here\"> Link Text</a></body>";
         String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
 
-        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">Link Text</content></body>")));
+        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\"> Link Text</content></body>")));
     }
 
     @Test
@@ -160,10 +159,10 @@ public class MethodeLinksBodyProcessorTest {
     public void shouldReplaceNodeAndNotAddTitleIfTitleIsMissing() {
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
 
-        String body = "<body><a href=\"" + uuid + "\">Link Text</a></body>";
+        String body = "<body><a href=\"" + uuid + "\"> Link Text</a></body>";
         String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
 
-        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">Link Text</content></body>")));
+        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\"> Link Text</content></body>")));
     }
 
     @Test
@@ -171,10 +170,10 @@ public class MethodeLinksBodyProcessorTest {
     public void shouldReplaceNodeWhenHrefContainsMethodePathWithUuidPresentInDocumentStore() {
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
 
-        String body = "<body><a href=\"/Content/2007/Path/To/Methode/Article.xml?uuid=" + uuid + "\" title=\"Some absurd text here\">Link Text</a></body>";
+        String body = "<body><a href=\"/Content/2007/Path/To/Methode/Article.xml?uuid=" + uuid + "\" title=\"Some absurd text here\"> Link Text</a></body>";
         String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
 
-        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">Link Text</content></body>")));
+        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" title=\"Some absurd text here\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\"> Link Text</content></body>")));
     }
 
     @Test
@@ -206,10 +205,10 @@ public class MethodeLinksBodyProcessorTest {
     public void shouldReplaceNodeWhenHrefContainsExternalLinkWithUuidPresentInDocumentStore() {
         when(documentStoreApiClient.getContentForUuids(anyCollection(), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
 
-        String body = "<body><a href=\"http://www.external.com/" + uuid + "\">Link Text</a></body>";
+        String body = "<body><a href=\"http://www.external.com/" + uuid + "\"> Link Text</a></body>";
         String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
 
-        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">Link Text</content></body>")));
+        assertThat(processedBody, is(identicalXmlTo("<body><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\"> Link Text</content></body>")));
     }
 
     @Test
@@ -307,97 +306,6 @@ public class MethodeLinksBodyProcessorTest {
 
         assertThat(processedBody, is(identicalXmlTo(body)));
     }
-    
-    @Test
-    public void thatSpaceIsAddedBeforeAfterLinkText() {
-        when(clientResponse.getStatus()).thenReturn(200);
-        when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-        
-        String body = "<body><p>The last time<a href=\"" + uuid + "\">China</a>was the world&#x2019;s largest economy</p></body>";
-        String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-        
-        String expectedBody = "<body><p>The last time <content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">China</content> was the world&#x2019;s largest economy</p></body>";
-        
-        assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-    }
-
-    @Test
-    public void thatSpaceNotModifiedWhenExistingBeforeAfterLinkText() {
-        when(clientResponse.getStatus()).thenReturn(200);
-        when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-        
-        String body = "<body><p>The last time <a href=\"" + uuid + "\">China</a> was the world&#x2019;s largest economy</p></body>";
-        String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-        
-        String expectedBody = "<body><p>The last time <content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">China</content> was the world&#x2019;s largest economy</p></body>";
-        
-        assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-    }
-    
-    @Test
-    public void thatPunctuationIsExtractedOutsideATag() {
-        when(clientResponse.getStatus()).thenReturn(200);
-        when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-        
-        String body = "<body><p><a href=\"" + uuid + "\">link text!?</a>  Lorem ipsum doler sit amet…</p></body>";
-        String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-        
-        String expectedBody = "<body><p><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">link text</content>!?  Lorem ipsum doler sit amet…</p></body>";
-        
-        assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-    }
-
-	@Test
-	public void thatPunctuationIsExtractedOutsideATagWithSpaceAdded() {
-		when(clientResponse.getStatus()).thenReturn(200);
-		when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-
-		String body = "<body><p><a href=\"" + uuid + "\">link text!?</a>Lorem ipsum doler sit amet…</p></body>";
-		String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-		
-		String expectedBody = "<body><p><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">link text</content>!? Lorem ipsum doler sit amet…</p></body>";
-
-		assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-	}
-
-	@Test
-	public void thatPunctuationIsExtractedOutsideATagEmptyParagraphAfter() {
-		when(clientResponse.getStatus()).thenReturn(200);
-		when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-
-		String body = "<body><p><a href=\"" + uuid + "\">link text!?</a></p></body>";
-		String expectedBody = "<body><p><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">link text</content>!?</p></body>";
-		
-		String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-
-		assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-    }
-    
-    @Test
-	public void thatWhitespaceNotRemovedWhenParenthesisPunctuation() {
-        when(clientResponse.getStatus()).thenReturn(200);
-        when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-
-		String body = "<body><p><a href=\"" + uuid + "\">link text</a>  (some details)</p></body>";
-		String expectedBody = "<body><p><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">link text</content> (some details)</p></body>";
-		
-		String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-
-		assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-	}
-
-	@Test
-	public void thatWhitespaceFromLinkTextAreRemoved() {
-		when(clientResponse.getStatus()).thenReturn(200);
-		when(documentStoreApiClient.getContentForUuids(anyCollectionOf(String.class), anyString())).thenReturn(Collections.singletonList(new Content(uuid,"Article")));
-		
-		String body = "<body><p><a href=\"" + uuid + "\">link text </a>  .  Lorem ipsum doler sit amet…</p></body>";
-		String processedBody = bodyProcessor.process(body, new DefaultTransactionIdBodyProcessingContext(TRANSACTION_ID));
-		
-		String expectedBody = "<body><p><content id=\"" + uuid + "\" type=\"" + MethodeLinksBodyProcessor.BASE_CONTENT_TYPE + "Article\">link text</content>.  Lorem ipsum doler sit amet…</p></body>";
-
-		assertThat(processedBody, is(identicalXmlTo(expectedBody)));
-	}
 
     @Test
     public void thatStreamLinksArePreserved() {
