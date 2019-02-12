@@ -1,9 +1,12 @@
 package com.ft.methodearticleinternalcomponentsmapper.transformation;
 
 import com.ft.bodyprocessing.BodyProcessor;
+import com.ft.methodearticleinternalcomponentsmapper.clients.DocumentStoreApiClient;
+import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiUnavailableException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.InvalidMethodeContentException;
-import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMissingFieldException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.TransformationException;
 import com.ft.methodearticleinternalcomponentsmapper.model.AlternativeStandfirsts;
@@ -23,6 +26,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,6 +58,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static com.ft.methodearticleinternalcomponentsmapper.model.EomFile.SOURCE_ATTR_XPATH;
 import static com.ft.methodearticleinternalcomponentsmapper.transformation.InternalComponentsMapper.Type.CONTENT_PACKAGE;
@@ -60,33 +66,8 @@ import static com.ft.uuidutils.DeriveUUID.Salts.IMAGE_SET;
 
 public class InternalComponentsMapper {
 
-    enum TransformationMode {
-        PUBLISH,
-        PREVIEW
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(InternalComponentsMapper.class);
 
-    interface Type {
-        String CONTENT_PACKAGE = "ContentPackage";
-        String ARTICLE = "Article";
-        String DYNAMIC_CONTENT = "DynamicContent";
-    }
-
-    public interface SourceCode {
-        String FT = "FT";
-        String CONTENT_PLACEHOLDER = "ContentPlaceholder";
-        String DYNAMIC_CONTENT = "DynamicContent";
-    }
-
-    private final FieldTransformer bodyTransformer;
-    private final BodyProcessor htmlFieldProcessor;
-    private final BlogUuidResolver blogUuidResolver;
-    private final Map<String, MethodeArticleValidator> articleValidators;
-    private final String apiHost;
-
-    private static final String NO_PICTURE_FLAG = "No picture";
-    private static final String DEFAULT_IMAGE_ATTRIBUTE_DATA_EMBEDDED = "data-embedded";
-    private static final String IMAGE_SET_TYPE = "http://www.ft.com/ontology/content/ImageSet";
-    private static final String BODY_TAG_XPATH = "/doc/story/text/body";
     private static final String SUMMARY_TAG_XPATH = "/doc/lead/lead-components/lead-summary";
     private static final String SHORT_TEASER_TAG_XPATH = "/doc/lead/lead-headline/skybox-headline";
     private static final String PROMOTIONAL_TITLE_VARIANT_TAG_XPATH = "/doc/lead/web-index-headline-variant/ln";
@@ -102,10 +83,12 @@ public class InternalComponentsMapper {
     private static final String XPATH_PUSH_NOTIFICATION_COHORT = "/ObjectMetadata/OutputChannels/DIFTcom/pushNotification";
     private static final String XPATH_PUSH_NOTIFICATION_TEXT = "/doc/lead/push-notification-text/ln";
     private static final String BLOCKS_XPATH = "/doc/blocks//block";
+    private static final String XPATH_ORIGINAL_UUID = "ObjectMetadata/EditorialNotes/OriginalUUID";
 
-    private static final Set<String> BLOG_CATEGORIES =
-            ImmutableSet.of("blog", "webchat-live-blogs", "webchat-live-qa", "webchat-markets-live", "fastft");
-
+    private static final String NO_PICTURE_FLAG = "No picture";
+    private static final String DEFAULT_IMAGE_ATTRIBUTE_DATA_EMBEDDED = "data-embedded";
+    private static final String IMAGE_SET_TYPE = "http://www.ft.com/ontology/content/ImageSet";
+    private static final String BODY_TAG_XPATH = "/doc/story/text/body";
     private static final String DEFAULT_DESIGN_THEME = "basic";
     private static final String DEFAULT_DESIGN_LAYOUT = "default";
     private static final String START_BODY = "<body";
@@ -114,14 +97,29 @@ public class InternalComponentsMapper {
     private static final String PUSH_NOTIFICATION_COHORT_NONE = "None";
     private static final String BLOCK_TYPE = "html-block";
 
+    private static final Set<String> BLOG_CATEGORIES =
+            ImmutableSet.of("blog", "webchat-live-blogs", "webchat-live-qa", "webchat-markets-live", "fastft");
+
+    private static final String UUID_REGEX = "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$";
+    private static final Pattern UUID_PATTERN = Pattern.compile(UUID_REGEX);
+
+    private final FieldTransformer bodyTransformer;
+    private final BodyProcessor htmlFieldProcessor;
+    private final BlogUuidResolver blogUuidResolver;
+    private final DocumentStoreApiClient documentStoreApiClient;
+    private final Map<String, MethodeArticleValidator> articleValidators;
+    private final String apiHost;
+
     public InternalComponentsMapper(FieldTransformer bodyTransformer,
                                     BodyProcessor htmlFieldProcessor,
                                     BlogUuidResolver blogUuidResolver,
+                                    DocumentStoreApiClient documentStoreApiClient,
                                     Map<String, MethodeArticleValidator> articleValidators,
                                     String apiHost) {
         this.bodyTransformer = bodyTransformer;
         this.htmlFieldProcessor = htmlFieldProcessor;
         this.blogUuidResolver = blogUuidResolver;
+        this.documentStoreApiClient = documentStoreApiClient;
         this.articleValidators = articleValidators;
         this.apiHost = apiHost;
     }
@@ -129,16 +127,16 @@ public class InternalComponentsMapper {
     public InternalComponents map(EomFile eomFile, String transactionId, Date lastModified, boolean preview) {
         try {
             UUID uuid = UUID.fromString(eomFile.getUuid());
-            final XPath xpath = XPathFactory.newInstance().newXPath();
+            final XPath xPath = XPathFactory.newInstance().newXPath();
             final Document attributesDocument = getAttributesDocument(eomFile);
             final Document valueDocument = getValueDocument(eomFile);
 
-            String sourceCode = xpath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
+            String sourceCode = xPath.evaluate(SOURCE_ATTR_XPATH, attributesDocument);
             if (!SourceCode.FT.equals(sourceCode) && !SourceCode.CONTENT_PLACEHOLDER.equals(sourceCode) && !SourceCode.DYNAMIC_CONTENT.equals(sourceCode)) {
                 throw new MethodeArticleNotEligibleForPublishException(uuid);
             }
 
-            final String type = determineType(xpath, attributesDocument, sourceCode);
+            final String type = determineType(xPath, attributesDocument, sourceCode);
 
             Boolean previewParam = SourceCode.FT.equals(sourceCode) || SourceCode.DYNAMIC_CONTENT.equals(sourceCode) ? preview : null;
             PublishingStatus status = articleValidators.get(sourceCode).getPublishingStatus(eomFile, transactionId, previewParam);
@@ -149,22 +147,22 @@ public class InternalComponentsMapper {
                     throw new MethodeMarkedDeletedException(uuid, type);
             }
 
-            final Design design = extractDesign(xpath, valueDocument, attributesDocument);
-            final TableOfContents tableOfContents = extractTableOfContents(xpath, valueDocument);
-            final List<Image> leadImages = extractImages(xpath, valueDocument, "/doc/lead/lead-image-set/lead-image-");
-            final Topper topper = extractTopper(xpath, valueDocument);
-            final String unpublishedContentDescription = extractUnpublishedContentDescription(xpath, valueDocument);
+            final Design design = extractDesign(xPath, valueDocument, attributesDocument);
+            final TableOfContents tableOfContents = extractTableOfContents(xPath, valueDocument);
+            final List<Image> leadImages = extractImages(xPath, valueDocument, "/doc/lead/lead-image-set/lead-image-");
+            final Topper topper = extractTopper(xPath, valueDocument);
+            final String unpublishedContentDescription = extractUnpublishedContentDescription(xPath, valueDocument);
             final AlternativeTitles alternativeTitles = AlternativeTitles.builder()
-                    .withShortTeaser(Strings.nullToEmpty(xpath.evaluate(SHORT_TEASER_TAG_XPATH, valueDocument)).trim())
-                    .withPromotionalTitleVariant(Strings.nullToEmpty(xpath.evaluate(PROMOTIONAL_TITLE_VARIANT_TAG_XPATH, valueDocument)).trim())
+                    .withShortTeaser(Strings.nullToEmpty(xPath.evaluate(SHORT_TEASER_TAG_XPATH, valueDocument)).trim())
+                    .withPromotionalTitleVariant(Strings.nullToEmpty(xPath.evaluate(PROMOTIONAL_TITLE_VARIANT_TAG_XPATH, valueDocument)).trim())
                     .build();
             final AlternativeStandfirsts alternativeStandfirsts = AlternativeStandfirsts.builder()
-                    .withPromotionalStandfirstVariant(Strings.nullToEmpty(xpath.evaluate(PROMOTIONAL_STANDFIRST_VARIANT_TAG_XPATH, valueDocument)).trim())
+                    .withPromotionalStandfirstVariant(Strings.nullToEmpty(xPath.evaluate(PROMOTIONAL_STANDFIRST_VARIANT_TAG_XPATH, valueDocument)).trim())
                     .build();
-            final Summary summary = extractSummary(xpath, valueDocument, transactionId, uuid.toString());
-            final String pushNotificationsCohort = extractPushNotificationsCohort(xpath, attributesDocument);
-            final String pushNotificationsText = extractPushNotificationsText(xpath, valueDocument);
-            final List<Block> blocks = getBlocks(xpath, valueDocument, type, transactionId);
+            final Summary summary = extractSummary(xPath, valueDocument, transactionId, uuid.toString());
+            final String pushNotificationsCohort = extractPushNotificationsCohort(xPath, attributesDocument);
+            final String pushNotificationsText = extractPushNotificationsText(xPath, valueDocument);
+            final List<Block> blocks = getBlocks(xPath, valueDocument, type, transactionId);
 
             InternalComponents.Builder internalComponentsBuilder = InternalComponents.builder()
                     .withUuid(uuid.toString())
@@ -182,19 +180,17 @@ public class InternalComponentsMapper {
                     .withPushNotificationsText(pushNotificationsText)
                     .withBlocks(blocks);
 
-            if (SourceCode.CONTENT_PLACEHOLDER.equals(sourceCode)) {
-                if (isWordpressBlogContentPlaceholder(eomFile, xpath)) {
-                    return internalComponentsBuilder.withUuid(resolvePlaceholderUuid(eomFile, transactionId, uuid, xpath)).build();
-                }
+            if (isContentPlaceholder(sourceCode)) {
+                String replacedUuid = getReplacementUuidForContentPlaceholder(uuid.toString(), transactionId, xPath, attributesDocument);
+                return internalComponentsBuilder.withUuid(replacedUuid).build();
+            }
+
+            if (SourceCode.DYNAMIC_CONTENT.equals(sourceCode)) {
                 return internalComponentsBuilder.build();
             }
 
-            if(SourceCode.DYNAMIC_CONTENT.equals(sourceCode)) {
-                return internalComponentsBuilder.build();
-            }
-
-            String sourceBodyXML = retrieveField(xpath, BODY_TAG_XPATH, valueDocument);
-            final String transformedBodyXML = transformBody(xpath, sourceBodyXML, attributesDocument, valueDocument, transactionId, uuid, preview);
+            String sourceBodyXML = retrieveField(xPath, BODY_TAG_XPATH, valueDocument);
+            final String transformedBodyXML = transformBody(xPath, sourceBodyXML, attributesDocument, valueDocument, transactionId, uuid, preview);
 
             return internalComponentsBuilder
                     .withXMLBody(transformedBodyXML)
@@ -204,17 +200,60 @@ public class InternalComponentsMapper {
         }
     }
 
-    private boolean isWordpressBlogContentPlaceholder(EomFile eomFile, XPath xpath) throws ParserConfigurationException, XPathExpressionException, IOException, SAXException {
-        Document attributesDocument = getDocumentBuilder().parse(new InputSource(new StringReader(eomFile.getAttributes())));
-        String listItemWiredIndexType = extractListItemWiredIndexType(xpath, attributesDocument);
-        return BLOG_CATEGORIES.contains(listItemWiredIndexType);
+    private boolean isContentPlaceholder(String source) {
+        return SourceCode.CONTENT_PLACEHOLDER.equals(source);
     }
 
-    private String resolvePlaceholderUuid(EomFile eomFile, String transactionId, UUID uuid, XPath xpath) throws SAXException, IOException, ParserConfigurationException, XPathExpressionException {
-        Document attributesDocument = getDocumentBuilder().parse(new InputSource(new StringReader(eomFile.getAttributes())));
-        String referenceId = extractRefField(xpath, attributesDocument, uuid);
-        String guid = extractServiceId(xpath, attributesDocument, uuid);
+    private String getReplacementUuidForContentPlaceholder(String cphUuid, String transactionId, XPath xPath,
+                                                           Document attributesDocument) throws XPathExpressionException {
+        String originalUuid = extractOriginalUuid(cphUuid, xPath, attributesDocument);
+
+        if (Strings.isNullOrEmpty(originalUuid)) {
+            if (isBlog(xPath, attributesDocument)) {
+                return resolveBlogPlaceholderUuid(attributesDocument, transactionId, cphUuid, xPath);
+            }
+            //if it's not a blog it means that we are dealing with an external CPH and we keep the provided uuid
+        } else {
+            return resolvePlaceholderUuid(originalUuid, cphUuid, transactionId);
+        }
+        return cphUuid;
+    }
+
+    private String extractOriginalUuid(String cphUuid, XPath xPath, Document attributesDocument) throws XPathExpressionException {
+        String originalUuid = xPath.evaluate(XPATH_ORIGINAL_UUID, attributesDocument);
+        if (!Strings.isNullOrEmpty(originalUuid)) {
+            if (!UUID_PATTERN.matcher(originalUuid).matches()) {
+                String errMsg = String.format("CPH with uuid: %s doesn't contain a valid OriginalUUID: %s.", cphUuid, originalUuid);
+                LOG.error(errMsg);
+                throw new TransformationException(errMsg);
+            }
+        }
+        return originalUuid;
+    }
+
+    private boolean isBlog(XPath xPath, Document attributesDocument) throws XPathExpressionException {
+        return BLOG_CATEGORIES.contains(extractListItemWiredIndexType(xPath, attributesDocument));
+    }
+
+    private String resolveBlogPlaceholderUuid(Document attributesDocument, String transactionId, String uuid, XPath xPath) throws XPathExpressionException {
+        String referenceId = extractRefField(xPath, attributesDocument, uuid);
+        String guid = extractServiceId(xPath, attributesDocument, uuid);
         return blogUuidResolver.resolveUuid(guid, referenceId, transactionId);
+    }
+
+    private String resolvePlaceholderUuid(String originalUuid, String cphUuid, String transactionId) {
+        try {
+            if (!documentStoreApiClient.isUUIDPresent(originalUuid, transactionId)) {
+                String errMsg = String.format("Failed to process CPH: %s. The OriginalUUID: %s does not exist in UPP.", cphUuid, originalUuid);
+                LOG.error(errMsg);
+                throw new TransformationException(errMsg);
+            }
+            return originalUuid;
+        } catch (DocumentStoreApiException e) {
+            String errMsg = String.format("Failed to process CPH: %s. %s", cphUuid, e.getMessage());
+            LOG.error(errMsg);
+            throw new TransformationException(errMsg, e);
+        }
     }
 
     private String retrieveField(XPath xpath, String expression, Document eomFileDocument) throws TransformerException, XPathExpressionException {
@@ -253,7 +292,7 @@ public class InternalComponentsMapper {
             return CONTENT_PACKAGE;
         }
 
-        if(sourceCode.equals(SourceCode.DYNAMIC_CONTENT)) {
+        if (sourceCode.equals(SourceCode.DYNAMIC_CONTENT)) {
             return Type.DYNAMIC_CONTENT;
         }
 
@@ -461,25 +500,25 @@ public class InternalComponentsMapper {
     private String getNodeValueAsString(Node node) throws TransformerException {
         String nodeAsString = convertNodeToStringReturningEmptyIfNull(node);
         return nodeAsString.replace("<" + node.getNodeName() + ">", "").replace("</" + node.getNodeName() + ">", "")
-                .replace("<"+ node.getNodeName() + "/>", "");
+                .replace("<" + node.getNodeName() + "/>", "");
     }
 
     private String extractListItemWiredIndexType(XPath xPath, Document attributesDocument) throws XPathExpressionException {
         return xPath.evaluate(XPATH_LIST_ITEM_TYPE, attributesDocument);
     }
 
-    private String extractServiceId(XPath xPath, Document attributesDocument, UUID uuid) throws XPathExpressionException {
+    private String extractServiceId(XPath xPath, Document attributesDocument, String uuid) throws XPathExpressionException {
         final String serviceId = xPath.evaluate(XPATH_GUID, attributesDocument);
         if (Strings.isNullOrEmpty(serviceId)) {
-            throw new MethodeMissingFieldException(uuid.toString(), "serviceid");
+            throw new MethodeMissingFieldException(uuid, "serviceid");
         }
         return serviceId;
     }
 
-    private String extractRefField(XPath xPath, Document attributesDocument, UUID uuid) throws XPathExpressionException {
+    private String extractRefField(XPath xPath, Document attributesDocument, String uuid) throws XPathExpressionException {
         final String refField = xPath.evaluate(XPATH_POST_ID, attributesDocument);
         if (Strings.isNullOrEmpty(refField)) {
-            throw new MethodeMissingFieldException(uuid.toString(), "ref_field");
+            throw new MethodeMissingFieldException(uuid, "ref_field");
         }
         return refField;
     }
@@ -534,5 +573,22 @@ public class InternalComponentsMapper {
         }
 
         return resultedBlocks;
+    }
+
+    enum TransformationMode {
+        PUBLISH,
+        PREVIEW
+    }
+
+    interface Type {
+        String CONTENT_PACKAGE = "ContentPackage";
+        String ARTICLE = "Article";
+        String DYNAMIC_CONTENT = "DynamicContent";
+    }
+
+    public interface SourceCode {
+        String FT = "FT";
+        String CONTENT_PLACEHOLDER = "ContentPlaceholder";
+        String DYNAMIC_CONTENT = "DynamicContent";
     }
 }

@@ -3,6 +3,7 @@ package com.ft.methodearticleinternalcomponentsmapper.transformation;
 import com.ft.bodyprocessing.BodyProcessor;
 import com.ft.bodyprocessing.html.Html5SelfClosingTagBodyProcessor;
 import com.ft.common.FileUtils;
+import com.ft.methodearticleinternalcomponentsmapper.clients.DocumentStoreApiClient;
 import com.ft.methodearticleinternalcomponentsmapper.exception.InvalidMethodeContentException;
 import com.ft.methodearticleinternalcomponentsmapper.model.Design;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
@@ -90,13 +91,14 @@ public class InternalComponentsMapperBodyProcessingTest {
     private InternalComponents standardExpectedContent;
 
     private FieldTransformer bodyTransformer;
+    private DocumentStoreApiClient documentStoreApiClient;
     private InternalComponentsMapper eomFileProcessor;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         bodyTransformer = mock(FieldTransformer.class);
         when(bodyTransformer.transform(anyString(), anyString(), anyVararg())).thenReturn(TRANSFORMED_BODY);
 
@@ -125,7 +127,9 @@ public class InternalComponentsMapperBodyProcessingTest {
         articleValidators.put(InternalComponentsMapper.SourceCode.FT, methodeArticleValidator);
         articleValidators.put(InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER, methodeContentPlaceholderValidator);
 
-        eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators, API_HOST);
+        documentStoreApiClient = mock(DocumentStoreApiClient.class);
+
+        eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, documentStoreApiClient, articleValidators, API_HOST);
     }
 
     @Test
@@ -181,7 +185,7 @@ public class InternalComponentsMapperBodyProcessingTest {
         articleValidators.put(InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER, methodeContentPlaceholderValidator);
         BodyProcessor htmlFieldProcessor = spy(new Html5SelfClosingTagBodyProcessor());
 
-        InternalComponentsMapper eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators, API_HOST);
+        InternalComponentsMapper eomFileProcessor = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, documentStoreApiClient, articleValidators, API_HOST);
 
         final InternalComponents expectedContent = InternalComponents.builder()
                 .withValuesFrom(standardExpectedContent)

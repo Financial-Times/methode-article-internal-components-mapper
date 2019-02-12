@@ -3,6 +3,7 @@ package com.ft.methodearticleinternalcomponentsmapper.clients;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ft.methodearticleinternalcomponentsmapper.configuration.UppServiceConfiguration;
+import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiInvalidRequestException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiUnavailableException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiUnmarshallingException;
@@ -88,6 +89,25 @@ public class DocumentStoreApiClient extends UppServiceClient {
             LOG.info("UUID for [{} / {}] is [{}].", identifierAuthority, identifierValue, uuid);
 
             return uuid;
+        });
+    }
+
+    public boolean isUUIDPresent(final String uuid, final String transactionId) {
+        final URI contentUri = UriBuilder.fromPath(CONTENT_PATH).path(uuid).scheme("http").host(apiHost).port(apiPort).build();
+        LOG.info("Call to Document Store API: {}", contentUri);
+        final ClientResponse response = jerseyClient.resource(contentUri)
+                .header(TRANSACTION_ID_HEADER, transactionId)
+                .get(ClientResponse.class);
+
+        return processResponse(response, resp -> {
+            if (resp.getStatus() == HttpStatus.SC_OK) {
+                return true;
+            }
+            if (resp.getStatus() == HttpStatus.SC_NOT_FOUND) {
+                return false;
+            } else {
+                throw new DocumentStoreApiException(String.format("Document Store API returned an unexpected status code: %s for uuid: %s.", response.getStatus(), uuid));
+            }
         });
     }
 

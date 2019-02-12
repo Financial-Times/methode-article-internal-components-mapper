@@ -1,5 +1,6 @@
 package com.ft.methodearticleinternalcomponentsmapper.clients;
 
+import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiInvalidRequestException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiUnavailableException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiUnmarshallingException;
@@ -9,7 +10,9 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -21,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.ft.api.util.transactionid.TransactionIdUtils.TRANSACTION_ID_HEADER;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
@@ -33,7 +38,8 @@ public class DocumentStoreApiClientTest {
     private static final String TRANSACTION_ID = "transactionId";
     private static final String HOST_HEADER = "document-store-api";
     private static final String UUID = "fbbee07f-5054-4a42-b596-64e0625d19a6";
-
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
     @Mock
     private Client jerseyClient;
     @Mock
@@ -42,11 +48,10 @@ public class DocumentStoreApiClientTest {
     private WebResource.Builder webResourceBuilder;
     @Mock
     private ClientResponse clientResponse;
-
     private DocumentStoreApiClient documentStoreApiClient;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         documentStoreApiClient = new DocumentStoreApiClient(jerseyClient, "localhost", 8080, HOST_HEADER);
 
         when(jerseyClient.resource(any(URI.class))).thenReturn(webResource);
@@ -102,5 +107,54 @@ public class DocumentStoreApiClientTest {
         assertThat(content).isNotNull();
         assertThat(content.size()).isEqualTo(1);
         assertThat(content).contains(new Content(UUID, "Article"));
+    }
+
+    @Test
+    public void testIsUUIDPresent_ReturnsTrueWhenUUIDIsPresentInDocumentStore() {
+        when(jerseyClient.resource(any(URI.class))).thenReturn(webResource);
+        when(webResource.header(TRANSACTION_ID_HEADER, TRANSACTION_ID)).thenReturn(webResourceBuilder);
+        when(webResourceBuilder.get(eq(ClientResponse.class))).thenReturn(clientResponse);
+
+        boolean isPresent = documentStoreApiClient.isUUIDPresent(UUID, TRANSACTION_ID);
+
+        assertTrue(isPresent);
+    }
+
+    @Test
+    public void testIsUUIDPresent_ReturnsFalseWhenUUIDIsNotPresentInDocumentStore() {
+        when(jerseyClient.resource(any(URI.class))).thenReturn(webResource);
+        when(webResource.header(TRANSACTION_ID_HEADER, TRANSACTION_ID)).thenReturn(webResourceBuilder);
+        when(webResourceBuilder.get(eq(ClientResponse.class))).thenReturn(clientResponse);
+        when(clientResponse.getStatus()).thenReturn(404);
+
+        boolean isPresent = documentStoreApiClient.isUUIDPresent(UUID, TRANSACTION_ID);
+
+        assertFalse(isPresent);
+    }
+
+    @Test
+    public void testIsUUIDPresent_ThrowsExceptionWhenDocumentStoreReturnsUnexpectedStatus() {
+        when(jerseyClient.resource(any(URI.class))).thenReturn(webResource);
+        when(webResource.header(TRANSACTION_ID_HEADER, TRANSACTION_ID)).thenReturn(webResourceBuilder);
+        when(webResourceBuilder.get(eq(ClientResponse.class))).thenReturn(clientResponse);
+        when(clientResponse.getStatus()).thenReturn(400);
+
+        exception.expect(DocumentStoreApiException.class);
+        documentStoreApiClient.isUUIDPresent(UUID, TRANSACTION_ID);
+
+        when(clientResponse.getStatus()).thenReturn(500);
+
+        exception.expect(DocumentStoreApiException.class);
+        documentStoreApiClient.isUUIDPresent(UUID, TRANSACTION_ID);
+
+        when(clientResponse.getStatus()).thenReturn(201);
+
+        exception.expect(DocumentStoreApiException.class);
+        documentStoreApiClient.isUUIDPresent(UUID, TRANSACTION_ID);
+
+        when(clientResponse.getStatus()).thenReturn(300);
+
+        exception.expect(DocumentStoreApiException.class);
+        documentStoreApiClient.isUUIDPresent(UUID, TRANSACTION_ID);
     }
 }
