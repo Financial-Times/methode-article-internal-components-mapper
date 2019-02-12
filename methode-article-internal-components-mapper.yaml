@@ -33,7 +33,7 @@ methodeArticleMapper:
         shortName: "methodeArticleMapper"
         path: map
         jerseyClient:
-            timeout: 2000ms
+            timeout: 3000ms
         primaryNodes: ["localhost:8080:8080", "localhost:8080:8080"]
     hostHeader: "methode-article-mapper"
     connectionConfiguration:
