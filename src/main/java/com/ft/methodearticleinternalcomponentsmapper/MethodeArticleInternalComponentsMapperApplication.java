@@ -128,6 +128,7 @@ public class MethodeArticleInternalComponentsMapperApplication extends Applicati
                 ).newInstance(),
                 new Html5SelfClosingTagBodyProcessor(),
                 blogUuidResolver,
+                documentStoreApiClient,
                 articleValidators,
                 configuration.getApiHost()
         );

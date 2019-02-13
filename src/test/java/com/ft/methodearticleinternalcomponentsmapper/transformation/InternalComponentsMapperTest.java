@@ -2,10 +2,13 @@ package com.ft.methodearticleinternalcomponentsmapper.transformation;
 
 import com.ft.bodyprocessing.html.Html5SelfClosingTagBodyProcessor;
 import com.ft.common.FileUtils;
+import com.ft.methodearticleinternalcomponentsmapper.clients.DocumentStoreApiClient;
+import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.InvalidMethodeContentException;
-import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMissingFieldException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.TransformationException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.UuidResolverException;
 import com.ft.methodearticleinternalcomponentsmapper.model.Design;
 import com.ft.methodearticleinternalcomponentsmapper.model.EomFile;
@@ -13,10 +16,8 @@ import com.ft.methodearticleinternalcomponentsmapper.model.Image;
 import com.ft.methodearticleinternalcomponentsmapper.model.InternalComponents;
 import com.ft.methodearticleinternalcomponentsmapper.validation.MethodeArticleValidator;
 import com.ft.methodearticleinternalcomponentsmapper.validation.PublishingStatus;
-
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,11 +82,21 @@ public class InternalComponentsMapperTest {
 
     private FieldTransformer bodyTransformer;
     private BlogUuidResolver blogUuidResolver;
+    private DocumentStoreApiClient documentStoreApiClient;
 
     private MethodeArticleValidator methodeArticleValidator;
-    private MethodeArticleValidator methodeContentPlaceholderValidator;
 
     private InternalComponentsMapper internalComponentsMapper;
+
+    private static byte[] buildEomFileValue(Map<String, Object> valuePlaceholdersValues) {
+        Template mustache = Mustache.compiler().escapeHTML(false).compile(ARTICLE_WITH_ALL_COMPONENTS);
+        return mustache.execute(valuePlaceholdersValues).getBytes(UTF_8);
+    }
+
+    private static String buildEomFileAttributes(Map<String, Object> attributesPlaceholdersValues) {
+        Template mustache = Mustache.compiler().escapeHTML(false).compile(ATTRIBUTES_TEMPLATE);
+        return mustache.execute(attributesPlaceholdersValues);
+    }
 
     @Before
     public void setUp() {
@@ -108,7 +119,7 @@ public class InternalComponentsMapperTest {
         Html5SelfClosingTagBodyProcessor htmlFieldProcessor = spy(new Html5SelfClosingTagBodyProcessor());
 
         methodeArticleValidator = mock(MethodeArticleValidator.class);
-        methodeContentPlaceholderValidator = mock(MethodeArticleValidator.class);
+        MethodeArticleValidator methodeContentPlaceholderValidator = mock(MethodeArticleValidator.class);
         when(methodeArticleValidator.getPublishingStatus(any(), any(), anyBoolean())).thenReturn(PublishingStatus.VALID);
         when(methodeContentPlaceholderValidator.getPublishingStatus(any(), any(), anyBoolean())).thenReturn(PublishingStatus.VALID);
 
@@ -117,7 +128,58 @@ public class InternalComponentsMapperTest {
         articleValidators.put(InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER, methodeContentPlaceholderValidator);
         articleValidators.put(InternalComponentsMapper.SourceCode.DYNAMIC_CONTENT, methodeArticleValidator);
 
-        internalComponentsMapper = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, articleValidators, API_HOST);
+        documentStoreApiClient = mock(DocumentStoreApiClient.class);
+
+        internalComponentsMapper = new InternalComponentsMapper(bodyTransformer, htmlFieldProcessor, blogUuidResolver, documentStoreApiClient, articleValidators, API_HOST);
+    }
+
+    @Test
+    public void thatContentPlaceholderWithOriginalUUIDIsResolved() {
+        attributesPlaceholdersValues.put("originalUUID", BLOG_UUID);
+        attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
+
+        when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenReturn(true);
+
+        eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
+        InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+
+        assertThat(actual.getUuid(), equalTo(BLOG_UUID));
+        assertThat(actual.getLastModified(), equalTo(LAST_MODIFIED));
+        assertThat(actual.getPublishReference(), equalTo(TX_ID));
+        verify(documentStoreApiClient).isUUIDPresent(BLOG_UUID, TX_ID);
+    }
+
+    @Test(expected = TransformationException.class)
+    public void thatContentPlaceholderWithInvalidOriginalUUIDThrowsException() {
+        attributesPlaceholdersValues.put("originalUUID", "invalidUUID");
+        attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
+
+        when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenReturn(true);
+
+        eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
+        internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+    }
+
+    @Test(expected = TransformationException.class)
+    public void thatContentPlaceholderWithOriginalUUIDMissingFromDocumentStoreThrowsException() {
+        attributesPlaceholdersValues.put("originalUUID", BLOG_UUID);
+        attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
+
+        when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenReturn(false);
+
+        eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
+        internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+    }
+
+    @Test(expected = TransformationException.class)
+    public void thatContentPlaceholderWithOriginalUUIDThrowsExceptionWhenDocumentStoreApiThrowsException() {
+        attributesPlaceholdersValues.put("originalUUID", BLOG_UUID);
+        attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
+
+        when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenThrow(new DocumentStoreApiException("Failed to call document store"));
+
+        eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
+        internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
     }
 
     @Test
@@ -127,6 +189,7 @@ public class InternalComponentsMapperTest {
 
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("ref_field", ref_field);
+        attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
 
         eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
         InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
@@ -146,6 +209,7 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("category", category);
+        attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
 
         eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
         InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
@@ -729,6 +793,7 @@ public class InternalComponentsMapperTest {
         InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
         assertThat(actual.getPushNotificationsText(), equalTo(expectedPushNotificationsText));
     }
+
     private EomFile createEomFile(Map<String, Object> valuePlaceholdersValues,
                                   Map<String, Object> attributesPlaceholdersValues) {
         return new EomFile.Builder()
@@ -751,15 +816,5 @@ public class InternalComponentsMapperTest {
                 .withWorkflowStatus("Stories/WebReady")
                 .withWebUrl(null)
                 .build();
-    }
-
-    private static byte[] buildEomFileValue(Map<String, Object> valuePlaceholdersValues) {
-        Template mustache = Mustache.compiler().escapeHTML(false).compile(ARTICLE_WITH_ALL_COMPONENTS);
-        return mustache.execute(valuePlaceholdersValues).getBytes(UTF_8);
-    }
-
-    private static String buildEomFileAttributes(Map<String, Object> attributesPlaceholdersValues) {
-        Template mustache = Mustache.compiler().escapeHTML(false).compile(ATTRIBUTES_TEMPLATE);
-        return mustache.execute(attributesPlaceholdersValues);
     }
 }
