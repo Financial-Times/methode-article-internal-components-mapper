@@ -2,7 +2,12 @@ FROM openjdk:8u171-jdk-alpine3.8
 
 COPY . /
 
-RUN apk --update add git maven \
+ARG SONATYPE_USER
+ARG SONATYPE_PASSWORD
+
+RUN apk --update add git maven curl \
+ && mkdir /root/.m2/ \
+ && curl -v -o /root/.m2/settings.xml "https://raw.githubusercontent.com/Financial-Times/nexus-settings/master/public-settings.xml" \
  && HASH=$(git log -1 --pretty=format:%H) \
  && mvn install -Dbuild.git.revision=$HASH -Djava.net.preferIPv4Stack=true \
  && rm -f target/methode-article-internal-components-mapper-*sources.jar \
@@ -26,3 +31,4 @@ CMD exec java $JAVA_OPTS \
      -Ddw.apiHost=$API_HOST \
      -Ddw.logging.appenders[0].logFormat="%-5p [%d{ISO8601, GMT}] %c: %X{transaction_id} %replace(%m%n[%thread]%xEx){'\n', '|'}%nopex%n" \
      -jar methode-article-internal-components-mapper.jar server config.yaml
+     
