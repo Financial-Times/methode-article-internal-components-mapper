@@ -129,7 +129,6 @@ public class InternalComponentsMapper {
     public InternalComponents map(EomFile eomFile, String transactionId, Date lastModified, boolean preview) {
         try {
             UUID uuid = UUID.fromString(eomFile.getUuid());
-            System.out.println(uuid);
             final XPath xPath = XPathFactory.newInstance().newXPath();
             final Document attributesDocument = getAttributesDocument(eomFile);
             final Document valueDocument = getValueDocument(eomFile);
