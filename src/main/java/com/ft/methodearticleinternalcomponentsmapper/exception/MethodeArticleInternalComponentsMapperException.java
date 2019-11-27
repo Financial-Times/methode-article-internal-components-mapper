@@ -4,4 +4,8 @@ public class MethodeArticleInternalComponentsMapperException extends RuntimeExce
     public MethodeArticleInternalComponentsMapperException(String msg, Throwable t) {
         super(msg, t);
     }
+
+    public MethodeArticleInternalComponentsMapperException(String msg) {
+        super(msg);
+    }
 }

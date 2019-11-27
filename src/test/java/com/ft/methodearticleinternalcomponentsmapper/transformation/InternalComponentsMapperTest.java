@@ -6,6 +6,7 @@ import com.ft.methodearticleinternalcomponentsmapper.clients.DocumentStoreApiCli
 import com.ft.methodearticleinternalcomponentsmapper.exception.DocumentStoreApiException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.InvalidMethodeContentException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleInternalComponentsMapperException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMissingFieldException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.TransformationException;
@@ -218,6 +219,36 @@ public class InternalComponentsMapperTest {
         assertThat(actual.getLastModified(), equalTo(LAST_MODIFIED));
         assertThat(actual.getPublishReference(), equalTo(TX_ID));
         verify(blogUuidResolver, times(0)).resolveUuid(anyString(), anyString(), anyString());
+    }
+
+
+    @Test(expected = MethodeArticleInternalComponentsMapperException.class)
+    public void testInternalContentIsNotUpdatedWhenOverrideOriginalIsNotTrue() {
+
+        Map<String, Object> attributesTemplateValues = new HashMap<>();
+        attributesTemplateValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
+        attributesTemplateValues.put("overrideOriginal", "false");
+
+        Map<String, Object> templateValues = new HashMap<>();
+
+        final EomFile eomFile = createEomFile(templateValues, attributesTemplateValues);
+        internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+    }
+
+    @Test
+    public void testInternalContentIsUpdatedWhenOverrideOriginalIsTrue() {
+
+        Map<String, Object> attributesTemplateValues = new HashMap<>();
+        attributesTemplateValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
+        attributesTemplateValues.put("overrideOriginal", "true");
+
+        Map<String, Object> templateValues = new HashMap<>();
+
+        final EomFile eomFile = createEomFile(templateValues, attributesTemplateValues);
+
+        InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+
+        assertThat(actual.getUuid(), equalTo(ARTICLE_UUID));
     }
 
     @Test
@@ -777,6 +808,7 @@ public class InternalComponentsMapperTest {
         when(bodyTransformer.transform(anyString(), anyString(), anyVararg())).thenReturn(BLOCKS_VALUE_IS_EMPTY);
         internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
     }
+
 
     private void testPushNotificationsCohort(String attributePushNotificationsCohort, String expectedPushNotificationsCohort) {
         attributesPlaceholdersValues.put(PLACEHOLDER_PUSH_NOTIFICATIONS_COHORT, attributePushNotificationsCohort);
