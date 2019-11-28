@@ -138,7 +138,6 @@ public class InternalComponentsMapperTest {
     public void thatContentPlaceholderWithOriginalUUIDIsResolved() {
         attributesPlaceholdersValues.put("originalUUID", BLOG_UUID);
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenReturn(true);
 
@@ -155,7 +154,6 @@ public class InternalComponentsMapperTest {
     public void thatContentPlaceholderWithInvalidOriginalUUIDThrowsException() {
         attributesPlaceholdersValues.put("originalUUID", "invalidUUID");
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenReturn(true);
 
@@ -167,7 +165,6 @@ public class InternalComponentsMapperTest {
     public void thatContentPlaceholderWithOriginalUUIDMissingFromDocumentStoreThrowsException() {
         attributesPlaceholdersValues.put("originalUUID", BLOG_UUID);
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenReturn(false);
 
@@ -179,7 +176,6 @@ public class InternalComponentsMapperTest {
     public void thatContentPlaceholderWithOriginalUUIDThrowsExceptionWhenDocumentStoreApiThrowsException() {
         attributesPlaceholdersValues.put("originalUUID", BLOG_UUID);
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         when(documentStoreApiClient.isUUIDPresent(BLOG_UUID, TX_ID)).thenThrow(new DocumentStoreApiException("Failed to call document store"));
 
@@ -195,7 +191,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
         InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
@@ -216,7 +211,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("category", category);
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
         InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
@@ -229,12 +223,11 @@ public class InternalComponentsMapperTest {
 
 
     @Test(expected = MethodeArticleInternalComponentsMapperException.class)
-    public void testInternalContentIsNotUpdatedWhenOverrideOriginalIsNotTrue() {
+    public void testInternalContentIsNotUpdatedWhenOverrideOriginalIsSetToFalse() {
 
         Map<String, Object> attributesTemplateValues = new HashMap<>();
         attributesTemplateValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
         attributesTemplateValues.put("overrideOriginal", "false");
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         Map<String, Object> templateValues = new HashMap<>();
 
@@ -248,7 +241,21 @@ public class InternalComponentsMapperTest {
         Map<String, Object> attributesTemplateValues = new HashMap<>();
         attributesTemplateValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
         attributesTemplateValues.put("overrideOriginal", "true");
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
+
+        Map<String, Object> templateValues = new HashMap<>();
+
+        final EomFile eomFile = createEomFile(templateValues, attributesTemplateValues);
+
+        InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
+
+        assertThat(actual.getUuid(), equalTo(ARTICLE_UUID));
+    }
+
+    @Test
+    public void testInternalContentIsUpdatedWhenOverrideOriginalIsMissing() {
+
+        Map<String, Object> attributesTemplateValues = new HashMap<>();
+        attributesTemplateValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
 
         Map<String, Object> templateValues = new HashMap<>();
 
@@ -292,7 +299,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("category", blogCategory);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
         InternalComponents actual = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
@@ -313,7 +319,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("category", category);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         when(blogUuidResolver.resolveUuid(anyString(), anyString(), anyString())).thenThrow(new UuidResolverException("Can't resolve uuid"));
 
@@ -331,7 +336,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("category", category);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
         internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
@@ -345,7 +349,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("category", category);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
         internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);
@@ -361,7 +364,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("serviceid", serviceId);
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("category", category);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         when(blogUuidResolver.resolveUuid(anyString(), anyString(), anyString())).thenThrow(new UuidResolverException("Can't resolve uuid"));
 
@@ -377,7 +379,6 @@ public class InternalComponentsMapperTest {
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
         attributesPlaceholdersValues.put("ref_field", ref_field);
         attributesPlaceholdersValues.put("category", category);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
 
         when(blogUuidResolver.resolveUuid(anyString(), anyString(), anyString())).thenThrow(new UuidResolverException("Can't resolve uuid"));
 
@@ -388,7 +389,6 @@ public class InternalComponentsMapperTest {
     @Test
     public void thatMapsContentPlaceholders() {
         attributesPlaceholdersValues.put("sourceCode", InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
         final EomFile eomFile = createEomFile(valuePlaceholdersValues, attributesPlaceholdersValues);
 
         InternalComponents content = internalComponentsMapper.map(eomFile, TX_ID, LAST_MODIFIED, false);

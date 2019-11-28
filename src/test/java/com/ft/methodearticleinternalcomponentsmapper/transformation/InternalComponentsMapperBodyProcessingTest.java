@@ -171,7 +171,6 @@ public class InternalComponentsMapperBodyProcessingTest {
         valuePlaceholdersValues.put(PLACEHOLDER_SUMMARY, true);
         valuePlaceholdersValues.put(PLACEHOLDER_SUMMARY_DISPLAY_POSITION, PLACEHOLDER_SUMMARY_DISPLAY_POSITION_AUTO);
         attributesPlaceholdersValues.put(PLACEHOLDER_SOURCE_CODE, InternalComponentsMapper.SourceCode.CONTENT_PLACEHOLDER);
-        attributesPlaceholdersValues.put("overrideOriginal", "true");
         final EomFile eomFile = createStandardEomFile(uuid, EOM_COMPOUND_STORY, valuePlaceholdersValues, systemAttributesPlaceholdersValues, attributesPlaceholdersValues);
 
         String blogUuid = UUID.randomUUID().toString();
