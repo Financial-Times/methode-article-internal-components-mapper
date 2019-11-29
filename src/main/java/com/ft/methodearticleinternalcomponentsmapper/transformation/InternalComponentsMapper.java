@@ -139,7 +139,7 @@ public class InternalComponentsMapper {
             }
 
             String overrideOriginalStr = xPath.evaluate(OVERRIDE_ORIGINAL_ATTR_XPATH, attributesDocument);
-            if (sourceCode.equals(SourceCode.CONTENT_PLACEHOLDER) && overrideOriginalStr.equals("false")) {
+            if (sourceCode.equals(SourceCode.CONTENT_PLACEHOLDER) && overrideOriginalStr != null && overrideOriginalStr.equals("false")) {
                 throw new MethodeArticleInternalComponentsMapperException("Could not override internal content for CPH because OverrideOriginal is not set to true");
             }
 
