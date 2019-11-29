@@ -8,6 +8,7 @@ import com.ft.methodearticleinternalcomponentsmapper.exception.InvalidMethodeCon
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleNotEligibleForPublishException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMarkedDeletedException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeMissingFieldException;
+import com.ft.methodearticleinternalcomponentsmapper.exception.MethodeArticleInternalComponentsMapperException;
 import com.ft.methodearticleinternalcomponentsmapper.exception.TransformationException;
 import com.ft.methodearticleinternalcomponentsmapper.model.AlternativeStandfirsts;
 import com.ft.methodearticleinternalcomponentsmapper.model.AlternativeTitles;
@@ -61,6 +62,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import static com.ft.methodearticleinternalcomponentsmapper.model.EomFile.SOURCE_ATTR_XPATH;
+import static com.ft.methodearticleinternalcomponentsmapper.model.EomFile.OVERRIDE_ORIGINAL_ATTR_XPATH ;
 import static com.ft.methodearticleinternalcomponentsmapper.transformation.InternalComponentsMapper.Type.CONTENT_PACKAGE;
 import static com.ft.uuidutils.DeriveUUID.Salts.IMAGE_SET;
 
@@ -135,6 +137,12 @@ public class InternalComponentsMapper {
             if (!SourceCode.FT.equals(sourceCode) && !SourceCode.CONTENT_PLACEHOLDER.equals(sourceCode) && !SourceCode.DYNAMIC_CONTENT.equals(sourceCode)) {
                 throw new MethodeArticleNotEligibleForPublishException(uuid);
             }
+
+            String overrideOriginalStr = xPath.evaluate(OVERRIDE_ORIGINAL_ATTR_XPATH, attributesDocument);
+            if (sourceCode.equals(SourceCode.CONTENT_PLACEHOLDER) && overrideOriginalStr != null && overrideOriginalStr.equals("false")) {
+                throw new MethodeArticleInternalComponentsMapperException("Could not override internal content for CPH because OverrideOriginal is not set to true");
+            }
+
 
             final String type = determineType(xPath, attributesDocument, sourceCode);
 
