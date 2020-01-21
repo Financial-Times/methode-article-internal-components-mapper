@@ -66,7 +66,7 @@ consumer:
     backoffPeriod: 10000
     streamCount: 1
     autoCommit: true
-    offsetReset: largest
+    offsetReset: latest
   healthCheck:
     name: "Can connect consumer to kafka-proxy"
     severity: 2
