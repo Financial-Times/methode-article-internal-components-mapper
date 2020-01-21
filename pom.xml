@@ -440,19 +440,19 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>com.github.Financial-Times</groupId>
-                <artifactId>ft-build-info-maven-plugin</artifactId>
-                <version>1.0.2</version>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>write-build-info-properties</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.github.Financial-Times</groupId>-->
+<!--                <artifactId>ft-build-info-maven-plugin</artifactId>-->
+<!--                <version>1.0.2</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>prepare-package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>write-build-info-properties</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
