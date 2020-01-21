@@ -54,6 +54,8 @@ methodeContentPlaceholderMapper:
 
 consumer:
   jerseyClient:
+    gzipEnabled: false
+    gzipEnabledForRequests: false
     connectionTimeout: 2 seconds
     timeout: 25 seconds
   messageConsumer:
@@ -75,6 +77,8 @@ consumer:
 
 producer:
   jerseyClient:
+    gzipEnabled: false
+    gzipEnabledForRequests: false
     connectionTimeout: 2 seconds
     timeout: 25 seconds
   messageProducer:
