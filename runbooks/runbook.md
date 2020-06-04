@@ -1,7 +1,6 @@
 # UPP - Methode Article Internal Components Mapper
 
-Methode Article Internal Components Mapper is a Dropwizard application which consumes Kafka events and maps raw Methode
-articles to internal content components.
+Methode Article Internal Components Mapper is a Dropwizard application which consumes Kafka events and maps raw Methode articles to internal content components.
 
 ## Code
 
@@ -9,7 +8,7 @@ up-maicm
 
 ## Primary URL
 
-<https://upp-prod-delivery-glb.upp.ft.com/__methode-article-internal-components-mapper>
+https://upp-prod-delivery-glb.upp.ft.com/__methode-article-internal-components-mapper/
 
 ## Service Tier
 
@@ -83,7 +82,7 @@ FullyAutomated
 
 The service is deployed in both Delivery clusters.
 The failover guide for the cluster is located here:
-<https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster>
+https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster
 
 ## Data Recovery Process Type
 
@@ -106,7 +105,7 @@ Manual
 Manual failover is needed when a new version of
 the service is deployed to production.
 Otherwise, an automated failover is going to take place when releasing.
-For more details about the failover process please see: <https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster>
+For more details about the failover process please see: https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster
 
 ## Key Management Process Type
 
@@ -121,12 +120,12 @@ To rotate credentials you need to login to a particular cluster and update varni
 
 Service in UPP K8S delivery clusters:
 
-- Pub-Prod-EU health: <https://upp-prod-delivery-eu.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper>
-- Pub-Prod-US health: <https://upp-prod-delivery-us.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper>
+- Pub-Prod-EU health: https://upp-prod-delivery-eu.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper
+- Pub-Prod-US health: https://upp-prod-delivery-us.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper
 
 ## First Line Troubleshooting
 
-<https://github.com/Financial-Times/upp-docs/tree/master/guides/ops/first-line-troubleshooting>
+https://github.com/Financial-Times/upp-docs/tree/master/guides/ops/first-line-troubleshooting
 
 ## Second Line Troubleshooting
 
