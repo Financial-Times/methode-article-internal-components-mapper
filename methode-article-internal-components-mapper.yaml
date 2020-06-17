@@ -64,13 +64,13 @@ consumer:
     backoffPeriod: 10000
     streamCount: 1
     autoCommit: true
-    offsetReset: largest
+    offsetReset: latest
   healthCheck:
     name: "Can connect consumer to kafka-proxy"
     severity: 2
     businessImpact: "Internal components of newly published Methode articles will not be available from the InternalContent API"
     technicalSummary: "Tests that kafka-proxy is reachable and message can be consumed"
-    panicGuideUrl: "https://dewey.ft.com/up-maicm.html"
+    panicGuideUrl: "https://runbooks.in.ft.com/up-maicm"
   systemCode: methode-web-pub
 
 producer:
@@ -87,7 +87,7 @@ producer:
     severity: 2
     businessImpact: "Internal components of newly published Methode articles will not be available from the InternalContent API"
     technicalSummary: "Tests that kafka-proxy is reachable and the CmsPublicationEvents topic exists"
-    panicGuideUrl: "https://dewey.ft.com/up-maicm.html"
+    panicGuideUrl: "https://runbooks.in.ft.com/up-maicm"
 
 contentUriPrefix: http://methode-article-internal-components-mapper.svc.ft.com/internalcomponents
 
