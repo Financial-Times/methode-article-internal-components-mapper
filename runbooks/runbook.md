@@ -1,3 +1,7 @@
+<!--
+    Written in the format prescribed by https://github.com/Financial-Times/runbook.md.
+    Any future edits should abide by this format.
+-->
 # UPP - Methode Article Internal Components Mapper
 
 Methode Article Internal Components Mapper is a Dropwizard application which consumes Kafka events and maps raw Methode articles to internal content components.
@@ -18,28 +22,6 @@ Platinum
 
 Production
 
-## Delivered By
-
-content
-
-## Supported By
-
-content
-
-## Known About By
-
-- dimitar.terziev
-- hristo.georgiev
-- elitsa.pavlova
-- elina.kaneva
-- georgi.kazakov
-- kalin.arsov
-- ivan.nikolov
-- miroslav.gatsanoga
-- mihail.mihaylov
-- tsvetan.dimitrov
-- georgi.ivanov
-
 ## Host Platform
 
 AWS
@@ -59,12 +41,19 @@ No
 
 No
 
-## Dependencies
+<!-- Placeholder - remove HTML comment markers to activate
+## Can Download Personal Data
+Choose Yes or No
 
-- kafka-proxy
-- up-mam
-- document-store-api
-- public-concordances-api
+...or delete this placeholder if not applicable to this system
+-->
+
+<!-- Placeholder - remove HTML comment markers to activate
+## Can Contact Individuals
+Choose Yes or No
+
+...or delete this placeholder if not applicable to this system
+-->
 
 ## Failover Architecture Type
 
@@ -82,7 +71,7 @@ FullyAutomated
 
 The service is deployed in both Delivery clusters.
 The failover guide for the cluster is located here:
-https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster
+<https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster>
 
 ## Data Recovery Process Type
 
@@ -105,7 +94,15 @@ Manual
 Manual failover is needed when a new version of
 the service is deployed to production.
 Otherwise, an automated failover is going to take place when releasing.
-For more details about the failover process please see: https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster
+For more details about the failover process please see: <https://github.com/Financial-Times/upp-docs/tree/master/failover-guides/delivery-cluster>
+
+<!-- Placeholder - remove HTML comment markers to activate
+## Heroku Pipeline Name
+Enter descriptive text satisfying the following:
+This is the name of the Heroku pipeline for this system. If you don't have a pipeline, this is the name of the app in Heroku. A pipeline is a group of Heroku apps that share the same codebase where each app in a pipeline represents the different stages in a continuous delivery workflow, i.e. staging, production.
+
+...or delete this placeholder if not applicable to this system
+-->
 
 ## Key Management Process Type
 
@@ -120,12 +117,12 @@ To rotate credentials you need to login to a particular cluster and update varni
 
 Service in UPP K8S delivery clusters:
 
-- Pub-Prod-EU health: https://upp-prod-delivery-eu.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper
-- Pub-Prod-US health: https://upp-prod-delivery-us.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper
+*   Pub-Prod-EU health: <https://upp-prod-delivery-eu.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper>
+*   Pub-Prod-US health: <https://upp-prod-delivery-us.upp.ft.com/__health/__pods-health?service-name=methode-article-internal-components-mapper>
 
 ## First Line Troubleshooting
 
-https://github.com/Financial-Times/upp-docs/tree/master/guides/ops/first-line-troubleshooting
+<https://github.com/Financial-Times/upp-docs/tree/master/guides/ops/first-line-troubleshooting>
 
 ## Second Line Troubleshooting
 
