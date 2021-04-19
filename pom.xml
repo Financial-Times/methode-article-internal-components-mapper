@@ -17,7 +17,7 @@
         <dw.version>0.7.1</dw.version>
         <junit.version>4.11</junit.version>
         <mockito-core.version>1.9.5</mockito-core.version>
-        <jersey-version>1.18.1</jersey-version>
+        <jersey-version>1.19.4</jersey-version>
         <uuid-utils.version>1.0.2</uuid-utils.version>
         <!-- Plugins -->
         <findbugs.version>2.5.2</findbugs.version>
@@ -404,10 +404,8 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>
                                         com.ft.methodearticleinternalcomponentsmapper.MethodeArticleInternalComponentsMapperApplication
                                     </mainClass>
